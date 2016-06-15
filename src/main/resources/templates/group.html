@@ -1,0 +1,61 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Welcome to your Group!</title>
+    <link href="/static/css/main.css"/>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,300,400,600,700' rel='stylesheet' type='text/css'/>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,300italic,700' rel='stylesheet' type='text/css'/>
+</head>
+<body>
+     <p th:text="'Welcome to Group ' + ${groupID} + '!'" />
+     <div class="UserList">
+         <h4>Member list: </h4>
+         <table>
+             <tr th:each="member,iterationStatus : ${members}">
+                 <td th:text="${iterationStatus.count}"></td>
+                 <td th:text="${member.getUsername()}"></td>
+             </tr>
+         </table>
+     </div>
+     <div th:if="${userState == 'admin'}">
+         <h5> Add User: </h5>
+         <form name="f" th:action="@{/addUserToGroup}" method="post">
+             <fieldset>
+                 <p th:text="${errorMessage}" />
+                 <input type="hidden" name="groupID" th:value="${groupID}"/>
+                 <label for="userName">UserName</label>
+                 <input type="text" id="userName" name="userName"/>
+                 <div class="form-actions">
+                     <button type="submit" class="btn">Add User</button>
+                 </div>
+             </fieldset>
+         </form>
+     </div>
+     <div class="groupComments">
+         <h3> Comments: </h3>
+         <div class="addGroupComment">
+             <form id="createComment" name="c" th:action="@{/addComment}" method="post">
+                 <fieldset>
+                     <input type="hidden" name="groupID" th:value="${groupID}"/>
+                     <label for="commentTitle">Title</label>
+                     <input type="text" id="commentTitle" name="commentTitle"/>
+                     <textarea form ="createComment" name="commentContent" id="commentContent" cols="35" wrap="soft"></textarea>
+                     <div class="form-actions">
+                         <button type="submit" class="btn">Add Comment</button>
+                     </div>
+                 </fieldset>
+             </form>
+         </div>
+         <table>
+             <tr th:each="comment,iterationStatus : ${comments}">
+                 <td th:text="${iterationStatus.count}"></td>
+                 <td th:text="${comment.getTitle()}"></td>
+                 <td th:text="${comment.getAuthor().getUsername()}"></td>
+                 <td th:text="${comment.getContent()}"></td>
+             </tr>
+         </table>
+     </div>
+    <div>
+        <td><a th:href="'/home'"><p th:text="Home" /></a></td>
+    </div>
+</body>
+</html>

@@ -6,9 +6,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Julian on 04.06.2016.
- */
 
 @Entity
 public class LearningGroup {
@@ -24,9 +21,28 @@ public class LearningGroup {
                 name="GROUPPARTICIPANTS",
                 joinColumns=@JoinColumn(name="GROUP_ID"),
                 inverseJoinColumns=@JoinColumn(name="USER_ID"))
-    List<User> users = new ArrayList<>();
+    List<SopraUser> users = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name="COMMENTASSIGNMENT",
+            joinColumns=@JoinColumn(name="GROUP_ID"),
+            inverseJoinColumns=@JoinColumn(name="COMMENT_ID"))
+    List<SopraUser> comments = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "id", nullable = true, foreignKey = @ForeignKey(name="id"))
+    SopraUser adminUser;
 
     public Integer getId() { return groupId; }
+
+    public SopraUser getAdminUser() { return adminUser; }
+
+    public void setAdminUser(SopraUser user) {
+        if(!users.contains(user)){
+           users.add(user);
+        }
+        adminUser = user; }
 
     public void setId(Integer id) { this.groupId = id; }
 
@@ -34,7 +50,27 @@ public class LearningGroup {
 
     public void setName(String name){ this.name = name; }
 
-    public List<User> getUsers() { return users; }
+    public List<SopraUser> getUsers() { return users; }
 
-    public void setUsers(List<User> users) { this.users = users; }
+    public void setUsers(List<SopraUser> users) { this.users = users; }
+
+    // Überprüft ob die 2 zu überprüfenden Lerngruppen die gleichen sind
+    @Override
+    public boolean equals(Object o){
+        if(this.name == null){
+            return false;
+        }else if(o == null){
+            return false;
+        }else if(o == this){
+            return true;
+        }else if(!(o instanceof LearningGroup)){
+            return false;
+        }
+        LearningGroup other = (LearningGroup)o;
+        if(this.name.equals(other.name)){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }
