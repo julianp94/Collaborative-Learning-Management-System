@@ -31,7 +31,7 @@ public class LearningGroup {
     List<SopraUser> comments = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "id", nullable = true, foreignKey = @ForeignKey(name="id"))
+    //@JoinColumn(name = "id", nullable = true, foreignKey = @ForeignKey(name="id"))
     SopraUser adminUser;
 
     public Integer getId() { return groupId; }

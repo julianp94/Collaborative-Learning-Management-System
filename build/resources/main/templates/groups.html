@@ -1,30 +1,44 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $("#navigation").load("/static/include/navigation.html");
+            $("#footer").load("/static/include/footer.html");
+        });
+    </script>
+    <script src="/static/include/css.js"></script>
+    <title>Group List</title>
 </head>
 <body>
-    <div class="GroupCreate">
-        <form name="f" th:action="@{/groupCreate}" method="post">
-            <fieldset>
-                <!--<div th:if="${param.error}" class="alert alert-error">
-                    Invalid username and password.
-                </div>-->
-                <label for="groupName">Groupname</label>
-                <input type="text" id="groupName" name="groupName"/>
-                <div class="form-actions">
-                    <button type="submit" class="btn">Create Group</button>
-                </div>
-            </fieldset>
-        </form>
+    <div id="navigation" class="navigation"></div>
+    <div class="header">
+        <div class="titleWrapper">Group List</div>
     </div>
-    <div class="GroupList">
-        <h3>You are member of the following groups: </h3>
-        <table>
-            <tr th:each="group,iterationStatus : ${groupIDs}">
-                <td th:text="${iterationStatus.count}"></td>
-                <td><a th:href="'/group?groupID='+${group.getId()}"><p th:text="${group.getName()}" /></a></td>
-            </tr>
-        </table>
+    <div class="main">
+        <div class="contentWrapper">
+            <div class="GroupCreate">
+                <form name="f" th:action="@{/groupCreate}" method="post">
+                    <fieldset>
+                        <label for="groupName">Groupname</label>
+                        <input type="text" id="groupName" name="groupName"/>
+                        <div class="form-actions">
+                            <button type="submit" class="btn">Create Group</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="GroupList">
+                <h3>You are member of the following groups: </h3>
+                <table>
+                    <tr th:each="group,iterationStatus : ${groupIDs}">
+                        <td th:text="${iterationStatus.count}"></td>
+                        <td><a th:href="'/group?groupID='+${group.getId()}"><p th:text="${group.getName()}" /></a></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
+    <div id="footer" class="footerWrapper"></div>
 </body>
 </html>

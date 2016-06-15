@@ -1,18 +1,30 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $("#navigation").load("/static/include/navigation.html");
+            $("#footer").load("/static/include/footer.html");
+        });
+    </script>
+    <script src="/static/include/css.js"></script>
     <title>AdminHome</title>
 </head>
 <body>
-Hallo Admin!
-<form th:action="@{/logout}" method="post">
-    <button type="submit" title="logout">
-        Logout
-    </button>
-</form>
-<div>
-    <td><a th:href="'/groupList'"><p th:text="Groups" /></a></td>
-</div>
+    <div id="navigation" class="navigation"></div>
+    <div class="header">
+        <div class="titleWrapper">Admin Home</div>
+    </div>
+    <div class="main">
+        <div class="contentWrapper">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" title="logout">
+                    Logout
+                </button>
+            </form>
+        </div>
+    </div>
+    <div id="footer" class="footerWrapper"></div>
 </body>
 </html>
