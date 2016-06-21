@@ -76,11 +76,13 @@ public class GroupController extends WebMvcConfigurerAdapter {
 
         List<Comment> comments = new ArrayList<Comment>();
         for(Comment comment: commentRepository.findAll()){
-            if(comment.group.getId().equals(Integer.parseInt(groupID))){
-                comments.add(comment);
+            if(comment.group.getId().equals(Integer.parseInt(groupID)) && !comment.getSubComment()){
+               comments.add(comment);
             }
         }
-        model.addAttribute("comments", comments);
+        Comment parentComment = new Comment();
+        parentComment.setSubComments(comments);
+        model.addAttribute("comments", parentComment);
 
         List<SopraUser> members = new ArrayList<SopraUser>();
         for(SopraUser user: userRepository.findAll()){
@@ -92,6 +94,17 @@ public class GroupController extends WebMvcConfigurerAdapter {
 
         return "group";
     }
+
+    @RequestMapping(value="/leaveGroup", method = RequestMethod.POST)
+    public String leaveGroup(@RequestParam(value="groupID", required = true) String groupID){
+        return "redirect:/home";
+    }
+
+    @RequestMapping(value="/removeUserFromGroup", method = RequestMethod.POST)
+    public String leaveGroup(@RequestParam(value="groupID", required = true) String groupID, @RequestParam(value="userName", required = true) String userName){
+        return "redirect:/home";
+    }
+
 
     // Wenn der Nutzer nicht Besitzer der Gruppe ist kann er keine Nutzer hinzufügen
     // Wenn der hinzuzufügende User nicht existiert -> Fehlermeldung
@@ -136,13 +149,17 @@ public class GroupController extends WebMvcConfigurerAdapter {
         newComment.setTitle(commentTitle);
         newComment.setContent(commentContent);
         newComment.setGroup(currentGroup);
-        commentRepository.save(newComment);
         if(commentParentID != null){
+            newComment.setSubComment(true);
+            commentRepository.save(newComment);
             Comment parentComment = commentRepository.findByCommentID(Integer.parseInt(commentParentID));
             if(parentComment != null){
                 parentComment.subComments.add(newComment);
                 commentRepository.save(parentComment);
             }
+        }else{
+            newComment.setSubComment(false);
+            commentRepository.save(newComment);
         }
         System.out.println("Added comment: "+newComment.getTitle()+" to Group "+currentGroup.getName());
         return "redirect:/group?groupID=" + currentGroup.getId();

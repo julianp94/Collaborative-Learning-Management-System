@@ -18,6 +18,8 @@ public class Comment {
 
     String content;
 
+    Boolean subComment;
+
     @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
     @JoinColumn(name = "parentCommentID", nullable = true, foreignKey = @ForeignKey(name="commentID"))
     List<Comment> subComments = new ArrayList<>();
@@ -76,6 +78,12 @@ public class Comment {
 
     public void setSubComments(List<Comment> subComments) {
         this.subComments = subComments;
+    }
+
+    public Boolean getSubComment() { return subComment; }
+
+    public void setSubComment(Boolean subComment) {
+        this.subComment = subComment;
     }
 
     @Override

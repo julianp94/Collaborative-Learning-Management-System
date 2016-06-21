@@ -114,6 +114,10 @@ html, body {
 	font-size: 30px;
 }
 
+.commentBox {
+	margin-bottom: 140px;
+}
+
 .login{
 	margin-top: -20px;
 	width: 300px;

@@ -13,15 +13,11 @@
 </head>
 <body>
     <div id="navigation" class="navigation"></div>
-    <div class="header">
-        <div class="titleWrapper">Admin Home</div>
-    </div>
+    <div class="titleWrapper">Admin Home</div>
     <div class="main">
         <div class="contentWrapper">
             <form th:action="@{/logout}" method="post">
-                <button type="submit" title="logout">
-                    Logout
-                </button>
+                <input type="submit" class="btn" value="Logout" />
             </form>
         </div>
     </div>

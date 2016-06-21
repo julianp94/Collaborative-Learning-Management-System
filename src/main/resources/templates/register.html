@@ -1,0 +1,31 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $("#navigation").load("/static/include/navigation.html");
+            $("#footer").load("/static/include/footer.html");
+        });
+    </script>
+    <script src="/static/include/css.js"></script>
+    <title>Registration</title>
+</head>
+<body>
+<div id="navigation" class="navigation"></div>
+<div class="titleWrapper">Registration</div>
+<div class="loginWrapper"><div class="login">
+    <form name="loginForm" th:action="@{/registrate}" method="post">
+        <table>
+            <tr><td><div class="loginError" id="loginError" th:style="${error} ? 'visibility:visible' : 'visibility:hidden'">UserName is taken</div></td><br/></tr>
+            <tr><td><input type="text" placeholder="Username" name="userName"/></td><br/></tr>
+            <tr><td><input type="password" placeholder="Password" name="userPassword"/></td><br/></tr>
+            <tr><td><input type="text" placeholder="E-Mail" name="userMail"/></td><br/></tr>
+            <tr><td><div class="form-actions">
+                <input type="submit" class="btn" value="Register" />
+            </div></td></tr>
+        </table>
+    </form>
+</div></div>
+<div id="footer" class="footerWrapper"></div>
+</body>
+</html>

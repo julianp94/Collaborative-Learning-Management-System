@@ -32,6 +32,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 //Zuerst müssen Seiten konfiguriert werden, welche ohne Zugriffsrechte aufgerufen werden dürfen
                 //(falls vorhanden)
                 .antMatchers("/login").permitAll()
+                .antMatchers("/register").permitAll()
                 .antMatchers("/static/**").permitAll()
                 //Für Address-Unterbereiche, welche nur mit speziellen Rechten betreten werden können, kann dies explizit
                 //angegeben werfen. (Hier: alles hinter /admin/... , z.b. /admin/home/ benötigt admin Rechte.

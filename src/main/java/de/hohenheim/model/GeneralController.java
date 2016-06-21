@@ -2,9 +2,12 @@ package de.hohenheim.model;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +17,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -21,13 +25,16 @@ import java.util.List;
 public class GeneralController extends WebMvcConfigurerAdapter {
 
     @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserDetailsManager userDetailsManager;
+
+    @Autowired
     private LearningGroupRepository learningGroupRepository;
 
     @Autowired
     private SopraUserRepository userRepository;
-
-    @Autowired
-    private CommentRepository commentRepository;
 
     private SopraUser getCurrentUser() {
         String userName = ((User) SecurityContextHolder.getContext().getAuthentication()
@@ -57,6 +64,37 @@ public class GeneralController extends WebMvcConfigurerAdapter {
     public String adminHome() {
         return "adminhome";
     }
+
+
+    @RequestMapping(value = "/register")
+    public String register(@RequestParam(value="error", required = false) String error, Model model) {
+        if(error != null){
+            model.addAttribute("error", true);
+        }else{
+            model.addAttribute("error", false);
+        }
+        return "register";
+    }
+
+    @RequestMapping(value = "/registrate", method = RequestMethod.POST)
+    public String registering(@RequestParam(value="userName", required = true) String userName, @RequestParam(value="userPassword", required = true) String userPassword,
+                              @RequestParam(value="userMail", required = true) String userMail) {
+        List<SopraUser> currentUser = userRepository.findByUsername(userName);
+        if(currentUser != null && currentUser.size() > 0){
+            return "register?error=NameTaken";
+        }
+
+        Collection<GrantedAuthority> authUser = new ArrayList<>();
+        authUser.add(new SimpleGrantedAuthority("ROLE_USER"));
+        userDetailsManager.createUser(new User(userName, passwordEncoder.encode(userPassword), authUser));
+
+        SopraUser newUser = new SopraUser();
+        newUser.setUsername(userName);
+        newUser.setEmailAdress(userMail);
+        userRepository.save(newUser);
+        return "login";
+    }
+
 
     @RequestMapping(value = "/home")
     public String userHome() {
