@@ -1,12 +1,13 @@
 package de.hohenheim.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.sql.Timestamp;
 
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-
-
+/**
+ * Created by Cedrik on 26.06.2016.
+ */
 @Entity
 public class Comment {
 
@@ -18,26 +19,23 @@ public class Comment {
 
     String content;
 
-    Boolean subComment;
+    Long creationTimeStamp;
 
-    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
-    @JoinColumn(name = "parentCommentID", nullable = true, foreignKey = @ForeignKey(name="commentID"))
-    List<Comment> subComments = new ArrayList<>();
-
-    @ManyToOne
-    @JoinColumn(name = "id", nullable = true, foreignKey = @ForeignKey(name="id"))
-    SopraUser author;
-
-    @ManyToOne
-    @JoinColumn(name = "groupId", nullable = true, foreignKey = @ForeignKey(name="groupId"))
-    LearningGroup group;
-
-    public LearningGroup getGroup() {
-        return group;
+    public Comment(){
+        creationTimeStamp = System.currentTimeMillis();
     }
 
-    public void setGroup(LearningGroup group) {
-        this.group = group;
+    public Long getCreationTimeStamp() {
+        return creationTimeStamp;
+    }
+
+    public void setCreationTimeStamp(Long creationTimeStamp) {
+        this.creationTimeStamp = creationTimeStamp;
+    }
+
+    public String printTimeStamp(){
+        Timestamp ts = new Timestamp(creationTimeStamp);
+        return ts.toString();
     }
 
     public String getContent() {
@@ -64,38 +62,16 @@ public class Comment {
         this.commentID = commentID;
     }
 
-    public SopraUser getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(SopraUser author) {
-        this.author = author;
-    }
-
-    public List<Comment> getSubComments() {
-        return subComments;
-    }
-
-    public void setSubComments(List<Comment> subComments) {
-        this.subComments = subComments;
-    }
-
-    public Boolean getSubComment() { return subComment; }
-
-    public void setSubComment(Boolean subComment) {
-        this.subComment = subComment;
-    }
-
     @Override
     public boolean equals(Object o){
         if(o == null){
             return false;
         }else if(o == this){
             return true;
-        }else if(!(o instanceof Comment)){
+        }else if(!(o instanceof GroupComment)){
             return false;
         }
-        Comment other = (Comment)o;
+        GroupComment other = (GroupComment)o;
         if(this.getCommentID().equals(other.getCommentID())){
             return true;
         }else{

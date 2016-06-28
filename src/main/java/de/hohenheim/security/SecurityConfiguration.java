@@ -33,6 +33,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 //(falls vorhanden)
                 .antMatchers("/login").permitAll()
                 .antMatchers("/register").permitAll()
+                .antMatchers("/registrate").permitAll()
                 .antMatchers("/static/**").permitAll()
                 //Für Address-Unterbereiche, welche nur mit speziellen Rechten betreten werden können, kann dies explizit
                 //angegeben werfen. (Hier: alles hinter /admin/... , z.b. /admin/home/ benötigt admin Rechte.

@@ -1,0 +1,198 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $("#navigation").load("/static/include/navigation.html");
+            $("#footer").load("/static/include/footer.html");
+        });
+    </script>
+    <script src="/static/include/css.js"></script>
+    <title th:text="${User.getUsername()}"></title>
+</head>
+<body>
+    <div id="navigation" class="navigation"></div>
+    <div class="header">
+        <div class="titleWrapper" th:text="${User.getUsername()}"></div>
+    </div>
+    <div class="main">
+        <div class="contentWrapper">
+            <div class="UserProfile">
+                <div th:if="${userState == 'owner'}">
+                    <br/>
+                    User Info:
+                    <br/>
+                    <form name="personalDataUpdate" th:action="@{/userUpdatePersonal}" method="post">
+                        <input type="hidden" name="userName" th:value="${User.getUsername()}"/>
+                        <table class="userInfo">
+                            <tr>
+                                <td>First Name: </td>
+                                <td><input type="text" th:placeholder="${User.getFirstName()}" id="firstName" name="firstName"/></td>
+                            </tr>
+                            <tr>
+                                <td>Last Name: </td>
+                                <td><input type="text" th:placeholder="${User.getLastName()}" id="lastName" name="lastName"/></td>
+                            </tr>
+                            <tr>
+                                <td>Birth Date: </td>
+                                <td><input type="date" th:value="${User.printBirthDate()}" id="birthDate" name="birthDate"/></td>
+                            </tr>
+                            <tr>
+                                <td>Gender: </td>
+                                <td><select id="gender" name="gender">
+                                    <option value="unknown" th:selected="${User.getGender().name() == 'unknown'}">Unknown</option>
+                                    <option value="male" th:selected="${User.getGender().name() == 'male'}">Male</option>
+                                    <option value="female" th:selected="${User.getGender().name() == 'female'}">Female</option>
+                                </select></td>
+                            </tr>
+                            <tr>
+                                <td>Telephone : </td>
+                                <td><input type="text" th:placeholder="${User.getTelefonNumber()}" id="telefonNumber" name="telefonNumber"/></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-actions">
+                                        <input type="submit" class="btn" value="Save" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+
+                    <br/>
+                    Address:
+                    <br/>
+                    <form name="addressUpdate" th:action="@{/userUpdateAddress}" method="post">
+                        <input type="hidden" name="userName" th:value="${User.getUsername()}"/>
+                        <table class="userInfo">
+                            <tr>
+                                <td>Street / Number : </td>
+                                <td><input type="text" th:placeholder="${User.getStreetName()}" id="streetName" name="streetName"/></td>
+                                <td><input type="text" th:placeholder="${User.getStreetNumber()}" id="streetNumber" name="streetNumber"/></td>
+                            </tr>
+                            <tr>
+                                <td>Postalcode / City : </td>
+                                <td><input type="text" th:placeholder="${User.getPostalCode()}" id="postalCode" name="postalCode"/></td>
+                                <td><input type="text" th:placeholder="${User.getCity()}" id="city" name="city"/></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-actions">
+                                        <input type="submit" class="btn" value="Save" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+
+                    <br/>
+                    Hobbies:
+                    <br/>
+                    <table class="userInfo">
+                        <tr th:each="hobby : ${User.getHobbiesAsList()}">
+                            <td th:text="${hobby}"></td>
+                            <td>
+                                <form th:action="@{/userUpdateRemoveHobby}" method="post">
+                                    <input type="hidden" name="userName" th:value="${User.getUsername()}"/>
+                                    <input type="hidden" name="hobby" th:value="${hobby}"/>
+                                    <input type="submit" class="btn" value="Delete" />
+                                </form>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <form th:action="@{/userUpdateAddHobby}" method="post">
+                                    <input type="hidden" name="userName" th:value="${User.getUsername()}"/>
+                                    <input type="text" placeholder="New hobby" name="hobby"/>
+                                    <input type="submit" class="btn" value="Add" />
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div th:if="${userState == 'user'}">
+                    <br/>
+                    User Info:
+                    <br/>
+                    <table class="userInfo">
+                        <tr>
+                            <td>First Name: </td>
+                            <td th:text="${User.getFirstName()}"></td>
+                        </tr>
+                        <tr>
+                            <td>Last Name: </td>
+                            <td th:text="${User.getLastName()}"></td>
+                        </tr>
+                        <tr>
+                            <td>Birth Date: </td>
+                            <td th:text="${User.printBirthDate()}"></td>
+                        </tr>
+                        <tr>
+                            <td>Gender: </td>
+                            <td th:text="${User.getGender().name()}"></td>
+                        </tr>
+                        <tr>
+                            <td>Telephone : </td>
+                            <td th:text="${User.getTelefonNumber()}"></td>
+                        </tr>
+                    </table>
+
+                    <br/>
+                    Address:
+                    <br/>
+                    <table class="userInfo">
+                        <tr>
+                            <td>Street / Number : </td>
+                            <td th:text="${User.getStreetName()}"></td>
+                            <td th:text="${User.getStreetNumber()}"></td>
+                        </tr>
+                        <tr>
+                            <td>Postalcode / City : </td>
+                            <td th:text="${User.getPostalCode()}"></td>
+                            <td th:text="${User.getCity()}"></td>
+                        </tr>
+                    </table>
+
+                    <br/>
+                    Hobbies:
+                    <br/>
+                    <table class="userInfo">
+                        <tr th:each="hobby : ${User.getHobbiesAsList()}">
+                            <td th:text="${hobby}"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <br/>
+                    User Feed
+                    <br/>
+                    <ul>
+                        <li th:each="comment : ${User.getUserFeed()}">
+                            <div class="comment">
+                                <span th:text="${comment.printTimeStamp()}"></span>
+                                <span th:text="${comment.getTitle()}"></span>
+                                <span th:text="${comment.getContent()}"></span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                Bla
+            </div>
+        </div>
+    </div>
+    <div id="footer" class="footerWrapper"></div>
+</body>
+</html>

@@ -23,6 +23,20 @@
                      <tr th:each="member,iterationStatus : ${members}">
                          <td th:text="${iterationStatus.count}"></td>
                          <td th:text="${member.getUsername()}"></td>
+                         <td th:if="${userState == 'admin' and group.getAdminUser().getUsername() != member.getUsername()}">
+                             <form th:action="@{/removeUserFromGroup}" method="post">
+                                 <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
+                                 <input type="hidden" name="groupID" th:value="${groupID}"/>
+                                 <input type="submit" class="btn" value="Kick" />
+                             </form>
+                         </td>
+                         <td th:if="${currentUser.getUsername() == member.getUsername()}">
+                             <form th:action="@{/removeUserFromGroup}" method="post">
+                                 <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
+                                 <input type="hidden" name="groupID" th:value="${groupID}"/>
+                                 <input type="submit" class="btn" value="Leave" />
+                             </form>
+                         </td>
                      </tr>
                  </table>
              </div>

@@ -2,7 +2,6 @@ package de.hohenheim.model;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
@@ -27,7 +26,10 @@ public class GroupController extends WebMvcConfigurerAdapter {
     private SopraUserRepository userRepository;
 
     @Autowired
-    private CommentRepository commentRepository;
+    private GroupCommentRepository commentRepository;
+
+    @Autowired
+    private UserFeedEntryRepository userFeedRepository;
 
     private SopraUser getCurrentUser() {
         String userName = ((User) SecurityContextHolder.getContext().getAuthentication()
@@ -56,7 +58,10 @@ public class GroupController extends WebMvcConfigurerAdapter {
         if(!learningGroupRepository.findByGroupId(Integer.parseInt(groupID)).getUsers().contains(getCurrentUser())){
             return "redirect:/home";
         }
+        LearningGroup group = learningGroupRepository.findByGroupId(Integer.parseInt(groupID));
         model.addAttribute("groupID",groupID);
+        model.addAttribute("group", group);
+        model.addAttribute("currentUser",getCurrentUser());
         LearningGroup currentGroup = learningGroupRepository.findByGroupId(Integer.parseInt(groupID));
         switch(error){
             case "UserNotFound":{
@@ -74,13 +79,13 @@ public class GroupController extends WebMvcConfigurerAdapter {
             model.addAttribute("userState","user");
         }
 
-        List<Comment> comments = new ArrayList<Comment>();
-        for(Comment comment: commentRepository.findAll()){
+        List<GroupComment> comments = new ArrayList<GroupComment>();
+        for(GroupComment comment: commentRepository.findAll()){
             if(comment.group.getId().equals(Integer.parseInt(groupID)) && !comment.getSubComment()){
                comments.add(comment);
             }
         }
-        Comment parentComment = new Comment();
+        GroupComment parentComment = new GroupComment();
         parentComment.setSubComments(comments);
         model.addAttribute("comments", parentComment);
 
@@ -94,17 +99,6 @@ public class GroupController extends WebMvcConfigurerAdapter {
 
         return "group";
     }
-
-    @RequestMapping(value="/leaveGroup", method = RequestMethod.POST)
-    public String leaveGroup(@RequestParam(value="groupID", required = true) String groupID){
-        return "redirect:/home";
-    }
-
-    @RequestMapping(value="/removeUserFromGroup", method = RequestMethod.POST)
-    public String leaveGroup(@RequestParam(value="groupID", required = true) String groupID, @RequestParam(value="userName", required = true) String userName){
-        return "redirect:/home";
-    }
-
 
     // Wenn der Nutzer nicht Besitzer der Gruppe ist kann er keine Nutzer hinzufügen
     // Wenn der hinzuzufügende User nicht existiert -> Fehlermeldung
@@ -120,7 +114,39 @@ public class GroupController extends WebMvcConfigurerAdapter {
         }else {
             currentGroup.users.add(newUser.get(0));
             learningGroupRepository.save(currentGroup);
+            UserFeedEntry entry = new UserFeedEntry();
+            entry.setUser(newUser.get(0));
+            entry.setTitle("GROUP JOINED");
+            entry.setContent(newUser.get(0).getUsername()+" joined the group "+currentGroup.getName()+"!");
+            newUser.get(0).addUserFeed(entry);
+            userFeedRepository.save(entry);
+            userRepository.save(newUser.get(0));
             System.out.println("Added "+newUser.get(0).getUsername()+" to Group "+currentGroup.getName());
+            return "redirect:/group?groupID=" + currentGroup.getId();
+        }
+    }
+
+    @RequestMapping(value = "/removeUserFromGroup", method = RequestMethod.POST)
+    public String removeUserFromGroup(@RequestParam(value="groupID", required = true) String groupID, @RequestParam(value="userName", required = true) String userName){
+        LearningGroup currentGroup =learningGroupRepository.findByGroupId(Integer.parseInt(groupID));
+        if (!getCurrentUser().getId().equals(learningGroupRepository.findByGroupId(Integer.parseInt(groupID)).getAdminUser().getId())
+                && !getCurrentUser().getUsername().equals(userName)){
+            return "redirect:/home";
+        }
+        List<SopraUser> newUser = userRepository.findByUsername(userName);
+        if(newUser.isEmpty()) {
+            return "redirect:/group?groupID=" + currentGroup.getId() + "&error=UserNotFound";
+        }else {
+            currentGroup.users.remove(newUser.get(0));
+            learningGroupRepository.save(currentGroup);
+            UserFeedEntry entry = new UserFeedEntry();
+            entry.setUser(newUser.get(0));
+            entry.setTitle("GROUP LEFT");
+            entry.setContent(newUser.get(0).getUsername()+" left the group "+currentGroup.getName()+"!");
+            newUser.get(0).addUserFeed(entry);
+            userFeedRepository.save(entry);
+            userRepository.save(newUser.get(0));
+            System.out.println("Removed "+newUser.get(0).getUsername()+" from Group "+currentGroup.getName());
             return "redirect:/group?groupID=" + currentGroup.getId();
         }
     }
@@ -133,6 +159,13 @@ public class GroupController extends WebMvcConfigurerAdapter {
         temporaryLearningGroup.setName(groupName);
         temporaryLearningGroup.setAdminUser(newAdmin);
         learningGroupRepository.save(temporaryLearningGroup);
+        UserFeedEntry entry = new UserFeedEntry();
+        entry.setUser(newAdmin);
+        entry.setTitle("GROUP CREATED");
+        entry.setContent(newAdmin.getUsername()+" created the group "+temporaryLearningGroup.getName()+"!");
+        newAdmin.addUserFeed(entry);
+        userFeedRepository.save(entry);
+        userRepository.save(newAdmin);
         return "redirect:/group?groupID="+temporaryLearningGroup.getId();
     }
 
@@ -144,7 +177,7 @@ public class GroupController extends WebMvcConfigurerAdapter {
         if (!learningGroupRepository.findByGroupId(Integer.parseInt(groupID)).getUsers().contains(getCurrentUser())){
             return "redirect:/home";
         }
-        Comment newComment = new Comment();
+        GroupComment newComment = new GroupComment();
         newComment.setAuthor(getCurrentUser());
         newComment.setTitle(commentTitle);
         newComment.setContent(commentContent);
@@ -152,7 +185,7 @@ public class GroupController extends WebMvcConfigurerAdapter {
         if(commentParentID != null){
             newComment.setSubComment(true);
             commentRepository.save(newComment);
-            Comment parentComment = commentRepository.findByCommentID(Integer.parseInt(commentParentID));
+            GroupComment parentComment = commentRepository.findByCommentID(Integer.parseInt(commentParentID));
             if(parentComment != null){
                 parentComment.subComments.add(newComment);
                 commentRepository.save(parentComment);
@@ -161,6 +194,14 @@ public class GroupController extends WebMvcConfigurerAdapter {
             newComment.setSubComment(false);
             commentRepository.save(newComment);
         }
+        SopraUser currentUser = getCurrentUser();
+        UserFeedEntry entry = new UserFeedEntry();
+        entry.setUser(currentUser);
+        entry.setTitle("COMMENT");
+        entry.setContent(currentUser.getUsername()+" wrote a comment in the group "+currentGroup.getName()+"!");
+        currentUser.addUserFeed(entry);
+        userFeedRepository.save(entry);
+        userRepository.save(currentUser);
         System.out.println("Added comment: "+newComment.getTitle()+" to Group "+currentGroup.getName());
         return "redirect:/group?groupID=" + currentGroup.getId();
     }
