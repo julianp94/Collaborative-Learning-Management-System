@@ -33,11 +33,11 @@
                         <table class="userInfo">
                             <tr>
                                 <td>First Name: </td>
-                                <td><input type="text" th:placeholder="${User.getFirstName()}" id="firstName" name="firstName"/></td>
+                                <td><input type="text" th:value="${User.getFirstName()}" id="firstName" name="firstName"/></td>
                             </tr>
                             <tr>
                                 <td>Last Name: </td>
-                                <td><input type="text" th:placeholder="${User.getLastName()}" id="lastName" name="lastName"/></td>
+                                <td><input type="text" th:value="${User.getLastName()}" id="lastName" name="lastName"/></td>
                             </tr>
                             <tr>
                                 <td>Birth Date: </td>
@@ -53,7 +53,7 @@
                             </tr>
                             <tr>
                                 <td>Telephone : </td>
-                                <td><input type="text" th:placeholder="${User.getTelefonNumber()}" id="telefonNumber" name="telefonNumber"/></td>
+                                <td><input type="text" th:value="${User.getTelefonNumber()}" id="telefonNumber" name="telefonNumber"/></td>
                             </tr>
                             <tr>
                                 <td>
@@ -73,13 +73,13 @@
                         <table class="userInfo">
                             <tr>
                                 <td>Street / Number : </td>
-                                <td><input type="text" th:placeholder="${User.getStreetName()}" id="streetName" name="streetName"/></td>
-                                <td><input type="text" th:placeholder="${User.getStreetNumber()}" id="streetNumber" name="streetNumber"/></td>
+                                <td><input type="text" th:value="${User.getStreetName()}" id="streetName" name="streetName"/></td>
+                                <td><input type="text" th:value="${User.getStreetNumber()}" id="streetNumber" name="streetNumber"/></td>
                             </tr>
                             <tr>
                                 <td>Postalcode / City : </td>
-                                <td><input type="text" th:placeholder="${User.getPostalCode()}" id="postalCode" name="postalCode"/></td>
-                                <td><input type="text" th:placeholder="${User.getCity()}" id="city" name="city"/></td>
+                                <td><input type="text" th:value="${User.getPostalCode()}" id="postalCode" name="postalCode"/></td>
+                                <td><input type="text" th:value="${User.getCity()}" id="city" name="city"/></td>
                             </tr>
                             <tr>
                                 <td>

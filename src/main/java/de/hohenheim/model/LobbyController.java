@@ -501,6 +501,20 @@ public class LobbyController extends WebMvcConfigurerAdapter {
         newAdmin.addUserFeed(entry);
         userFeedRepository.save(entry);
         userRepository.save(newAdmin);
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(900000);
+                }catch (InterruptedException e) {}
+                lobbyDelete(lobby.getID());
+            }
+        }.start();
         return "redirect:/lobby?lobbyID="+lobby.getID();
+
+    }
+
+    public void lobbyDelete(int lobbyId){
+        lobbyRepository.delete(lobbyId);
     }
 }

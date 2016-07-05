@@ -28,12 +28,12 @@
                      <table class="groupInfo">
                          <tr>
                              <td>Topic: </td>
-                             <td><input type="text" th:placeholder="${group.getTopic()}" id="groupTopic" name="groupTopic"/></td>
+                             <td><input type="text" th:value="${group.getTopic()}" id="groupTopic" name="groupTopic"/></td>
                              <td><input form="questionList" type="submit" class="btn" value="*" /></td>
                          </tr>
                          <tr>
                              <td>Description: </td>
-                             <td><textarea th:placeholder="${group.getDescription()}" name="groupDescription" cols="35" wrap="soft"></textarea></td>
+                             <td><textarea th:text="${group.getDescription()}" name="groupDescription" cols="35" wrap="soft"></textarea></td>
                          </tr>
                          <tr>
                              <td>
@@ -60,10 +60,14 @@
                  </form>
              </div>
             <div th:if="${userState == 'user'}">
+                <form id="questionList" th:action="@{/questionList}" method="get">
+                    <input type="hidden" name="topic" th:value="${group.getTopic()}"/>
+                </form>
                 <table class="groupInfo">
                     <tr>
                         <td>Topic: </td>
                         <td th:text="${group.getTopic()}"></td>
+                        <td><input form="questionList" type="submit" class="btn" value="*" /></td>
                     </tr>
                     <tr>
                         <td>Description: </td>
