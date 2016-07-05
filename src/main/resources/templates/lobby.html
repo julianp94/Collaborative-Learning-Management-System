@@ -1,0 +1,79 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $("#navigation").load("/static/include/navigation.html");
+            $("#footer").load("/static/include/footer.html");
+        });
+    </script>
+    <script src="/static/include/css.js"></script>
+    <title>Welcome to your Lobby!</title>
+</head>
+<body>
+    <div id="navigation" class="navigation"></div>
+    <div class="header">
+        <div class="titleWrapper" th:text="'Welcome to Lobby ' + ${lobby.getID()} + '!'"></div>
+    </div>
+    <div class="main">
+        <div class="contentWrapper">
+             <br/>
+             <br/>
+             <div th:if="${userState == 'admin'}">
+                 <h5> Add User: </h5>
+                 <form name="f" th:action="@{/addUserToLobby}" method="post">
+                     <fieldset>
+                         <p th:text="${errorMessage}" />
+                         <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
+                         <label for="userName">UserName</label>
+                         <input type="text" id="userName" name="userName"/>
+                         <div class="form-actions">
+                             <input type="submit" class="btn" value="Add User" />
+                         </div>
+                     </fieldset>
+                 </form>
+             </div>
+            <div class="UserList">
+                <h4>Member list: </h4>
+                <table>
+                    <tr th:each="member,iterationStatus : ${lobby.getUsers()}">
+                        <td th:text="${iterationStatus.count}"></td>
+                        <td th:text="${member.getUsername()}"></td>
+                        <td th:if="${userState == 'admin' and lobby.getAdminUser().getUsername() != member.getUsername()}">
+                            <form th:action="@{/removeUserFromLobby}" method="post">
+                                <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
+                                <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
+                                <input type="submit" class="btn" value="Kick" />
+                            </form>
+                        </td>
+                        <td th:if="${currentUser.getUsername() == member.getUsername()}">
+                            <form th:action="@{/removeUserFromLobby}" method="post">
+                                <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
+                                <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
+                                <input type="submit" class="btn" value="Leave" />
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+             <br />
+            <div th:if="${openQuiz == true}">
+                <p>You have an open Quiz!</p>
+                <form th:action="@{/quiz}" method="post">
+                    <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
+                    <input type="submit" class="btn" value="Start Quiz" />
+                </form>
+            </div>
+             <br />
+             <br />
+             <br />
+             <br />
+             <br />
+             <br />
+             <br />
+             <br />
+        </div>
+    </div>
+    <div id="footer" class="footerWrapper"></div>
+</body>
+</html>

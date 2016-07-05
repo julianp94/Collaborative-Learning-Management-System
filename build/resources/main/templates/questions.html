@@ -1,0 +1,76 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $("#navigation").load("/static/include/navigation.html");
+            $("#footer").load("/static/include/footer.html");
+        });
+    </script>
+    <script src="/static/include/css.js"></script>
+    <title>Question List</title>
+</head>
+<body>
+    <div id="navigation" class="navigation"></div>
+    <div class="header">
+        <div class="titleWrapper" th:text="'Questions for Topic ' + ${Topic} + '!'"></div>
+    </div>
+    <div class="main">
+        <div class="contentWrapper">
+            <div class="QuestionAdd">
+                <form name="f" th:action="@{/questionCreation}" method="post">
+                    <input type="hidden" name="topic" th:value="${Topic}"/>
+                    <input type="hidden" name="questionType" value="MPC"/>
+                    <input type="text" name="questionText" placeholder="Question Text..."/>
+                    <textarea type="text" name="answer" cols="35" wrap="soft" placeholder="Question Answers seperated by ;"></textarea>
+                    <div class="form-actions">
+                        <input type="submit" class="btn" value="Create MPC" />
+                    </div>
+                </form>
+            </div>
+            <div class="QuestionAdd">
+                <form name="f" th:action="@{/questionCreation}" method="post">
+                    <input type="hidden" name="topic" th:value="${Topic}"/>
+                    <input type="hidden" name="questionType" value="Text"/>
+                    <input type="text" name="questionText" placeholder="Question Text..."/>
+                    <textarea type="text" name="questionMods" cols="35" wrap="soft" placeholder="Mods seperated by ;"></textarea>
+                    <div class="form-actions">
+                        <input type="submit" class="btn" value="Create Question" />
+                    </div>
+                </form>
+            </div>
+            <div class="QuestionList">
+                <table>
+                    <tr th:each="question : ${mpcQuestions}">
+                        <td th:text="${question.getId()}"></td>
+                        <td th:text="${question.getAdminUser().getUsername()}"></td>
+                        <td th:text="${question.getQuestionText()}"></td>
+                        <td th:if="${currentUser == question.getAdminUser()}">
+                            <form th:action="@{/questionRemove}" method="post">
+                                <input type="hidden" name="questionID" th:value="${question.getId()}"/>
+                                <input type="hidden" name="questionType" value="MPC"/>
+                                <input type="submit" class="btn" value="Delete" />
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr th:each="question : ${textQuestions}">
+                        <td th:text="${question.getId()}"></td>
+                        <td th:text="${question.getAdminUser().getUsername()}"></td>
+                        <td th:text="${question.getQuestionText()}"></td>
+                        <td th:if="${currentUser == question.getAdminUser()}">
+                            <form th:action="@{/questionRemove}" method="post">
+                                <input type="hidden" name="questionID" th:value="${question.getId()}"/>
+                                <input type="hidden" name="questionType" value="Text"/>
+                                <input type="submit" class="btn" value="Delete" />
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="footer" class="footerWrapper"></div>
+</body>
+</html>

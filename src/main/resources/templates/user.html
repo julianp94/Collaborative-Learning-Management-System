@@ -20,6 +20,12 @@
             <div class="UserProfile">
                 <div th:if="${userState == 'owner'}">
                     <br/>
+                    <br/>
+                    <form th:action="@{/logout}" method="post">
+                        <input type="submit" class="btn" value="Logout" />
+                    </form>
+                    <br/>
+                    <br/>
                     User Info:
                     <br/>
                     <form name="personalDataUpdate" th:action="@{/userUpdatePersonal}" method="post">

@@ -16,6 +16,10 @@ public class LearningGroup {
 
     String name;
 
+    String topic = "";
+
+    String description;
+
     @ManyToMany
     @JoinTable(
                 name="GROUPPARTICIPANTS",
@@ -42,6 +46,22 @@ public class LearningGroup {
            users.add(user);
         }
         adminUser = user; }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public void setId(Integer id) { this.groupId = id; }
 

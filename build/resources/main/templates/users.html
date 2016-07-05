@@ -21,11 +21,13 @@
                 <h3>Registered Users: </h3>
                 <table>
                     <tr>
+                        <td>Ranking Points</td>
                         <td>Username</td>
                         <td>First Name</td>
                         <td>Last Name</td>
                     </tr>
                     <tr th:each="user : ${Users}">
+                        <td><p th:text="${user.getRankingPoints()}" /></td>
                         <td><a th:href="'/user?userName='+${user.getUsername()}"><p th:text="${user.getUsername()}" /></a></td>
                         <td><p th:text="${user.getFirstName()}" /></td>
                         <td><p th:text="${user.getLastName()}" /></td>

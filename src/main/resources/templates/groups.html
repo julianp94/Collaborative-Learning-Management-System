@@ -34,6 +34,17 @@
                     <tr th:each="group,iterationStatus : ${groupIDs}">
                         <td th:text="${iterationStatus.count}"></td>
                         <td><a th:href="'/group?groupID='+${group.getId()}"><p th:text="${group.getName()}" /></a></td>
+                        <td th:text="${group.getTopic()}"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="LobbyList">
+                <h4>Lobby list: </h4>
+                <table>
+                    <tr th:each="lobby,iterationStatus : ${lobbies}">
+                        <td th:text="${iterationStatus.count}"></td>
+                        <td th:text="${lobby.getAdminUser().getUsername()}"></td>
+                        <td><a th:href="'/lobby?lobbyID='+${lobby.getID()}">Enter</a></td>
                     </tr>
                 </table>
             </div>

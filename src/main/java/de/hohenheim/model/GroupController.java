@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-//@EnableWebMvc
 public class GroupController extends WebMvcConfigurerAdapter {
 
     @Autowired
@@ -30,6 +29,15 @@ public class GroupController extends WebMvcConfigurerAdapter {
 
     @Autowired
     private UserFeedEntryRepository userFeedRepository;
+
+    @Autowired
+    private MPCQuestionRepository mpcQuestionRepository;
+
+    @Autowired
+    private TextQuestionRepository textQuestionRepository;
+
+    @Autowired
+    private LobbyRepository lobbyRepository;
 
     private SopraUser getCurrentUser() {
         String userName = ((User) SecurityContextHolder.getContext().getAuthentication()
@@ -60,6 +68,13 @@ public class GroupController extends WebMvcConfigurerAdapter {
         }
         LearningGroup group = learningGroupRepository.findByGroupId(Integer.parseInt(groupID));
         model.addAttribute("groupID",groupID);
+        List<Lobby> lobbies = new ArrayList<>();
+        for(Lobby lobby: lobbyRepository.findAll()){
+            if(lobby.getLearningGroup().equals(group) && lobby.getUsers().contains(getCurrentUser())){
+                lobbies.add(lobby);
+            }
+        }
+        model.addAttribute("lobbies", lobbies);
         model.addAttribute("group", group);
         model.addAttribute("currentUser",getCurrentUser());
         LearningGroup currentGroup = learningGroupRepository.findByGroupId(Integer.parseInt(groupID));
@@ -149,6 +164,19 @@ public class GroupController extends WebMvcConfigurerAdapter {
             System.out.println("Removed "+newUser.get(0).getUsername()+" from Group "+currentGroup.getName());
             return "redirect:/group?groupID=" + currentGroup.getId();
         }
+    }
+
+    @RequestMapping(value = "/groupDataUpdate", method = RequestMethod.POST)
+    public String groupDataUpdate(@RequestParam(value="groupID", required = true) String groupID, @RequestParam(value="groupTopic", required = true) String groupTopic, @RequestParam(value="groupDescription", required = true) String groupDescription){
+        LearningGroup currentGroup =learningGroupRepository.findByGroupId(Integer.parseInt(groupID));
+        if (!getCurrentUser().getId().equals(learningGroupRepository.findByGroupId(Integer.parseInt(groupID)).getAdminUser().getId())){
+            return "redirect:/home";
+        }
+        currentGroup.setTopic(groupTopic);
+        currentGroup.setDescription(groupDescription);
+        learningGroupRepository.save(currentGroup);
+
+        return "redirect:/group?groupID="+currentGroup.getId();
     }
 
     // Funktion für das Erstellen von Gruppen

@@ -17,30 +17,35 @@
     </div>
     <div class="main">
         <div class="contentWrapper">
-             <div class="UserList">
-                 <h4>Member list: </h4>
-                 <table>
-                     <tr th:each="member,iterationStatus : ${members}">
-                         <td th:text="${iterationStatus.count}"></td>
-                         <td th:text="${member.getUsername()}"></td>
-                         <td th:if="${userState == 'admin' and group.getAdminUser().getUsername() != member.getUsername()}">
-                             <form th:action="@{/removeUserFromGroup}" method="post">
-                                 <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
-                                 <input type="hidden" name="groupID" th:value="${groupID}"/>
-                                 <input type="submit" class="btn" value="Kick" />
-                             </form>
-                         </td>
-                         <td th:if="${currentUser.getUsername() == member.getUsername()}">
-                             <form th:action="@{/removeUserFromGroup}" method="post">
-                                 <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
-                                 <input type="hidden" name="groupID" th:value="${groupID}"/>
-                                 <input type="submit" class="btn" value="Leave" />
-                             </form>
-                         </td>
-                     </tr>
-                 </table>
-             </div>
+             <br/>
+             <br/>
              <div th:if="${userState == 'admin'}">
+                 <form id="questionList" th:action="@{/questionList}" method="get">
+                     <input type="hidden" name="topic" th:value="${group.getTopic()}"/>
+                 </form>
+                 <form name="groupDataUpdate" th:action="@{/groupDataUpdate}" method="post">
+                     <input type="hidden" name="groupID" th:value="${group.getId()}"/>
+                     <table class="groupInfo">
+                         <tr>
+                             <td>Topic: </td>
+                             <td><input type="text" th:placeholder="${group.getTopic()}" id="groupTopic" name="groupTopic"/></td>
+                             <td><input form="questionList" type="submit" class="btn" value="*" /></td>
+                         </tr>
+                         <tr>
+                             <td>Description: </td>
+                             <td><textarea th:placeholder="${group.getDescription()}" name="groupDescription" cols="35" wrap="soft"></textarea></td>
+                         </tr>
+                         <tr>
+                             <td>
+                                 <div class="form-actions">
+                                     <input type="submit" class="btn" value="Save" />
+                                 </div>
+                             </td>
+                         </tr>
+                     </table>
+                 </form>
+                 <br />
+                 <br />
                  <h5> Add User: </h5>
                  <form name="f" th:action="@{/addUserToGroup}" method="post">
                      <fieldset>
@@ -54,6 +59,67 @@
                      </fieldset>
                  </form>
              </div>
+            <div th:if="${userState == 'user'}">
+                <table class="groupInfo">
+                    <tr>
+                        <td>Topic: </td>
+                        <td th:text="${group.getTopic()}"></td>
+                    </tr>
+                    <tr>
+                        <td>Description: </td>
+                        <td><textarea readonly="readonly" style="border: none" th:text="${group.getDescription()}" cols="35" wrap="soft"></textarea></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="UserList">
+                <h4>Member list: </h4>
+                <table>
+                    <tr th:each="member,iterationStatus : ${members}">
+                        <td th:text="${iterationStatus.count}"></td>
+                        <td th:text="${member.getUsername()}"></td>
+                        <td th:if="${userState == 'admin' and group.getAdminUser().getUsername() != member.getUsername()}">
+                            <form th:action="@{/removeUserFromGroup}" method="post">
+                                <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
+                                <input type="hidden" name="groupID" th:value="${groupID}"/>
+                                <input type="submit" class="btn" value="Kick" />
+                            </form>
+                        </td>
+                        <td th:if="${currentUser.getUsername() == member.getUsername()}">
+                            <form th:action="@{/removeUserFromGroup}" method="post">
+                                <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
+                                <input type="hidden" name="groupID" th:value="${groupID}"/>
+                                <input type="submit" class="btn" value="Leave" />
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="LobbyList">
+                <h4>Lobby list: </h4>
+                <table>
+                    <tr th:each="lobby,iterationStatus : ${lobbies}">
+                        <td th:text="${iterationStatus.count}"></td>
+                        <td th:text="${lobby.getAdminUser().getUsername()}"></td>
+                        <td><a th:href="'/lobby?lobbyID='+${lobby.getID()}">Enter</a></td>
+                    </tr>
+                    <tr>
+                        <td><form th:action="@{/lobbyCreate}" method="post">
+                            <input type="hidden" name="groupID" th:value="${groupID}"/>
+                            <input type="hidden" name="lobbyType" value="Text" />
+                            <input type="submit" class="btn" value="Question Lobby" />
+                        </form></td>
+                        <td><form th:action="@{/lobbyCreate}" method="post">
+                            <input type="hidden" name="groupID" th:value="${groupID}"/>
+                            <input type="hidden" name="lobbyType" value="MPC" />
+                            <input type="submit" class="btn" value="MPC Lobby" />
+                        </form></td>
+                    </tr>
+                </table>
+            </div>
+
+
              <div class="groupComments">
                  <h3> Comments: </h3>
                  <div class="addGroupComment">

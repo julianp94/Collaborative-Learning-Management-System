@@ -43,6 +43,14 @@ public class UserController extends WebMvcConfigurerAdapter {
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
     }
 
+    @RequestMapping(value = "/home")
+    public String userProfile(Model model) {
+        SopraUser user = getCurrentUser();
+        model.addAttribute("User",user);
+        model.addAttribute("userState","owner");
+        return "user";
+    }
+
     // Wenn die Lerngruppe nicht existiert -> Home
     // Wenn der User nicht in der Lerngruppe ist -> Home
     // Wenn der User Gruppenadmin ist bekommt er die Möglichkeit User hinzuzufügen

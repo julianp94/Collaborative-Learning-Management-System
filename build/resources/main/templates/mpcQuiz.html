@@ -1,0 +1,43 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $("#navigation").load("/static/include/navigation.html");
+            $("#footer").load("/static/include/footer.html");
+        });
+    </script>
+    <script src="/static/include/css.js"></script>
+    <title>MPC QUIZ</title>
+</head>
+<body>
+<div id="navigation" class="navigation"></div>
+<div class="header"><div class="titleWrapper">MPC QUIZ</div></div>
+<div class="main">
+    <div class="contentWrapper">
+    <form th:action="@{/quizResult}" method="post">
+        <input type="hidden" name="lobbyID" th:value="${lobbyID}"/>
+        <table th:each="question,iterationStatus : ${mpcQuestions}">
+            <tr>
+                <td th:text="${question.getQuestionText()}"></td>
+                <td><input type="hidden" th:name="'questionIDs'+${iterationStatus.index}" th:value="${question.getId()}"/></td><br/>
+            </tr>
+            <tr th:each="questionAnswer : ${question.getQuestionAnswersAsList()}">
+                <td><input type="radio" th:name="'answers'+${iterationStatus.index}" th:value="${questionAnswer}" /></td><td th:text="${questionAnswer}"></td><br/>
+            </tr>
+        </table>
+        <div class="form-actions">
+            <input type="submit" class="btn" value="Check" />
+        </div>
+    </form>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    </div>
+</div>
+<div id="footer" class="footerWrapper"></div>
+</body>
+</html>

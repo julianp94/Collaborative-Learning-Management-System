@@ -36,6 +36,9 @@ public class GeneralController extends WebMvcConfigurerAdapter {
     @Autowired
     private SopraUserRepository userRepository;
 
+    @Autowired
+    private LobbyRepository lobbyRepository;
+
     private SopraUser getCurrentUser() {
         String userName = ((User) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal()).getUsername();
@@ -52,17 +55,10 @@ public class GeneralController extends WebMvcConfigurerAdapter {
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
     }
 
-    /*@Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry){
-        registry.addResourceHandler("/css/**").addResourceLocations("/static/css/")
-        .setCachePeriod(3600)
-        .resourceChain(true)
-        .addResolver(new PathResourceResolver());
-    }*/
 
     @RequestMapping(value = "/admin/home")
     public String adminHome() {
-        return "adminhome";
+        return "redirect:/home";
     }
 
 
@@ -96,10 +92,10 @@ public class GeneralController extends WebMvcConfigurerAdapter {
     }
 
 
-    @RequestMapping(value = "/home")
-    public String userHome() {
-        return "userhome";
-    }
+   // @RequestMapping(value = "/home")
+   // public String userHome() {
+  //      return "userhome";
+   // }
 
     // Seite für das erstellen von Gruppen, zeigt alle Gruppen an in denen man Mitglied ist
     @RequestMapping(value = "/groupList")
@@ -111,6 +107,13 @@ public class GeneralController extends WebMvcConfigurerAdapter {
             }
         }
         model.addAttribute("groupIDs", groupIDs);
+        List<Lobby> lobbies = new ArrayList<>();
+        for(Lobby lobby: lobbyRepository.findAll()){
+            if(lobby.getUsers().contains(getCurrentUser())){
+                lobbies.add(lobby);
+            }
+        }
+        model.addAttribute("lobbies", lobbies);
         return "groups";
     }
 

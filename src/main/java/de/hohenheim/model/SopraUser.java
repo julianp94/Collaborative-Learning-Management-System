@@ -43,6 +43,16 @@ public class SopraUser {
 
     private String telefonNumber = "";
 
+    public int getRankingPoints() {
+        return rankingPoints;
+    }
+
+    public void addRankingPoints(int rankingPoints) {
+        this.rankingPoints += rankingPoints;
+    }
+
+    private int rankingPoints = 0;
+
     private String[] hobbies = new String[0];
 
     @ManyToMany

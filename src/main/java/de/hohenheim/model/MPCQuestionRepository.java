@@ -4,8 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface LearningGroupRepository extends JpaRepository<LearningGroup, Integer> {
+public interface MPCQuestionRepository extends JpaRepository<MPCQuestion, Integer> {
 
-    LearningGroup findByGroupId (Integer groupId);
+   MPCQuestion findByQuestionID(Integer questionID);
 
 }

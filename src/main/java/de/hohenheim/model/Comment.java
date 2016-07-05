@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Cedrik on 26.06.2016.
@@ -34,8 +36,8 @@ public class Comment {
     }
 
     public String printTimeStamp(){
-        Timestamp ts = new Timestamp(creationTimeStamp);
-        return ts.toString();
+        SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yy HH:mm");
+        return ft.format(new Date(creationTimeStamp));
     }
 
     public String getContent() {
