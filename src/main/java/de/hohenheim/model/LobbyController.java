@@ -1,5 +1,6 @@
 package de.hohenheim.model;
 
+import org.aspectj.weaver.patterns.TypePatternQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,8 +46,8 @@ public class LobbyController extends WebMvcConfigurerAdapter {
         String userName = ((User) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal()).getUsername();
         List<SopraUser> currentUser = userRepository.findByUsername(userName);
-        if(currentUser == null){
-            return null;
+        if(currentUser == null || currentUser.size() < 1){
+            throw new RuntimeException("Unknown User logged in!");
         }
         return currentUser.get(0);
     }
@@ -61,6 +62,37 @@ public class LobbyController extends WebMvcConfigurerAdapter {
     public String questionCreationPage(@RequestParam(value="topic", required = true) String topic, Model model){
         model.addAttribute("Topic", topic);
         return "questionCreation";
+    }
+
+    @RequestMapping(value = "/quizValidation")
+    public String quizValidationList(Model model){
+        QuestionAnswer unvalidatedAnswer = null;
+        for(QuestionAnswer questionAnswer: questionAnswerRepository.findAll()){
+            if(!questionAnswer.isMpcAnswer() && !questionAnswer.isValidated() && questionAnswer.getTextQuestion().getQuestionEditors().contains(getCurrentUser())){
+                unvalidatedAnswer = questionAnswer;
+                break;
+            }
+        }
+        if(unvalidatedAnswer == null){
+            return "redirect:/home";
+        }
+        model.addAttribute("unvalidatedAnswer", unvalidatedAnswer);
+        return "textQuizValidation";
+    }
+
+    @RequestMapping(value = "/quizValidationResult")
+    public String quizValidationResult(@RequestParam(value="answerID", required = true) String answerID,@RequestParam(value="answerCorrect", required = false, defaultValue="false") String answerCorrect){
+        QuestionAnswer currentAnswer = questionAnswerRepository.findByAnswerID(Integer.parseInt(answerID));
+        if(currentAnswer.getTextQuestion().getQuestionEditors().contains(getCurrentUser())){
+            currentAnswer.setCorrect(Boolean.parseBoolean(answerCorrect));
+            currentAnswer.setValidated(true);
+            questionAnswerRepository.save(currentAnswer);
+            if(Boolean.parseBoolean(answerCorrect)){
+                currentAnswer.getStudent().addRankingPoints(1);
+                userRepository.save(currentAnswer.getStudent());
+            }
+        }
+        return "redirect:/quizValidation";
     }
 
     @RequestMapping(value = "/questionList")
@@ -470,7 +502,7 @@ public class LobbyController extends WebMvcConfigurerAdapter {
                     if(currentGroup.getTopic().equals(question.getQuestionTopic())) {
                         lobby.addMpcQuestions(question);
                         counter--;
-                        if(counter < 0) {
+                        if(counter <= 0) {
                             break;
                         }
                     }
@@ -484,7 +516,7 @@ public class LobbyController extends WebMvcConfigurerAdapter {
                 if(currentGroup.getTopic().equals(question.getQuestionTopic())) {
                     lobby.addTextQuestions(question);
                     counter--;
-                    if(counter < 0) {
+                    if(counter <= 0) {
                         break;
                     }
                 }

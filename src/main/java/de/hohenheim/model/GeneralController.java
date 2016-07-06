@@ -39,12 +39,13 @@ public class GeneralController extends WebMvcConfigurerAdapter {
     @Autowired
     private LobbyRepository lobbyRepository;
 
+
     private SopraUser getCurrentUser() {
         String userName = ((User) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal()).getUsername();
         List<SopraUser> currentUser = userRepository.findByUsername(userName);
-        if(currentUser == null){
-            return null;
+        if(currentUser == null || currentUser.size() < 1){
+            throw new RuntimeException("Unknown User logged in!");
         }
         return currentUser.get(0);
     }

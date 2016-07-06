@@ -25,7 +25,10 @@ public class TextQuestion {
     public SopraUser getAdminUser() { return adminUser; }
 
     public void setAdminUser(SopraUser user) {
-        adminUser = user; }
+        if(!questionEditors.contains(user))
+            questionEditors.add(user);
+        adminUser = user;
+    }
 
     public void setId(Integer id) { this.questionID = id; }
 

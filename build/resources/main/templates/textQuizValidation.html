@@ -1,0 +1,45 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $("#navigation").load("/static/include/navigation.html");
+            $("#footer").load("/static/include/footer.html");
+        });
+    </script>
+    <script src="/static/include/css.js"></script>
+    <title>Quiz Validation</title>
+</head>
+<body>
+<div id="navigation" class="navigation"></div>
+<div class="header"><div class="titleWrapper">Quiz Validation</div></div>
+<div class="main">
+    <div class="contentWrapper">
+    <form th:action="@{/quizValidationResult}" method="post">
+        <table>
+            <tr>
+                <td th:text="${unvalidatedAnswer.getTextQuestion().getQuestionText()}"></td>
+                <td><input type="hidden" name="answerID" th:value="${unvalidatedAnswer.getId()}"/></td><br/>
+            </tr>
+            <tr>
+                <td><textarea cols="55" wrap="soft" readonly="readonly" style="border: none;background: none" th:text="${unvalidatedAnswer.getQuestionAnswer()}" ></textarea></td><br/>
+            </tr>
+            <tr>
+                <td>Correct: <input type="checkbox" name="answerCorrect" value="true"/></td><br/>
+            </tr>
+        </table>
+        <div class="form-actions">
+            <input type="submit" class="btn" value="Submit" />
+        </div>
+    </form>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    </div>
+</div>
+<div id="footer" class="footerWrapper"></div>
+</body>
+</html>

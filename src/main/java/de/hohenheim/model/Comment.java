@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by Cedrik on 26.06.2016.
+ * Created by Julian on 26.06.2016.
  */
 @Entity
 public class Comment {

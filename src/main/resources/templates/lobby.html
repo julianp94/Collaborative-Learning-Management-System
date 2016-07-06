@@ -17,6 +17,30 @@
     </div>
     <div class="main">
         <div class="contentWrapper">
+
+            <table>
+                <tr>
+                    <td>
+                        <div class="GroupInfo">
+                            <b>Open Quiz:</b>
+                            <div th:if="${openQuiz == true}">
+                                <p>You have an open Quiz!</p>
+                                <form th:action="@{/quiz}" method="post">
+                                    <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
+                                    <input type="submit" class="btn" value="Start Quiz" />
+                                </form>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="GroupInfo">
+
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+
              <br/>
              <br/>
              <div th:if="${userState == 'admin'}">
@@ -57,13 +81,7 @@
                 </table>
             </div>
              <br />
-            <div th:if="${openQuiz == true}">
-                <p>You have an open Quiz!</p>
-                <form th:action="@{/quiz}" method="post">
-                    <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
-                    <input type="submit" class="btn" value="Start Quiz" />
-                </form>
-            </div>
+
              <br />
              <br />
              <br />

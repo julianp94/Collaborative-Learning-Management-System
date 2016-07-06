@@ -30,6 +30,8 @@ public class TestSetup implements ApplicationListener<ContextRefreshedEvent> {
     private LearningGroupRepository learningGroupRepository;
     @Autowired
     private MPCQuestionRepository mpcQuestionRepository;
+    @Autowired
+    private TextQuestionRepository textQuestionRepository;
 
     /**
      * Handle an application event.
@@ -198,6 +200,30 @@ public class TestSetup implements ApplicationListener<ContextRefreshedEvent> {
         newQuestion11.addQuestionAnswer("1111");
         newQuestion11.addQuestionAnswer("1");
         mpcQuestionRepository.save(newQuestion11);
+
+        TextQuestion newTextQuestion1 = new TextQuestion();
+        newTextQuestion1.setAdminUser(user1);
+        newTextQuestion1.setQuestionTopic("Mathe");
+        newTextQuestion1.setQuestionText("Nenne die Dreiecksungleichung!");
+        newTextQuestion1.addQuestionEditors(user2);
+        newTextQuestion1.addQuestionEditors(user3);
+        textQuestionRepository.save(newTextQuestion1);
+
+        TextQuestion newTextQuestion2 = new TextQuestion();
+        newTextQuestion2.setAdminUser(user1);
+        newTextQuestion2.setQuestionTopic("Mathe");
+        newTextQuestion2.setQuestionText("Warum studiert man Mathe?");
+        newTextQuestion2.addQuestionEditors(user2);
+        newTextQuestion2.addQuestionEditors(user3);
+        textQuestionRepository.save(newTextQuestion2);
+
+        TextQuestion newTextQuestion3 = new TextQuestion();
+        newTextQuestion3.setAdminUser(user1);
+        newTextQuestion3.setQuestionTopic("Mathe");
+        newTextQuestion3.setQuestionText("Ein Zug fährt mit 100km/h auf einen 30km entfernten Bahnhof zu. Welche Temperatur hat das Brot in der Tasche eines Reisenden bei der Ankunft?");
+        newTextQuestion3.addQuestionEditors(user2);
+        newTextQuestion3.addQuestionEditors(user3);
+        textQuestionRepository.save(newTextQuestion3);
     }
 
 

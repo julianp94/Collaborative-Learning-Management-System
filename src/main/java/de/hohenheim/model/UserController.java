@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -27,12 +28,18 @@ public class UserController extends WebMvcConfigurerAdapter {
     @Autowired
     private UserFeedEntryRepository userFeedRepository;
 
+    @Autowired
+    private TextQuestionRepository textQuestionRepository;
+
+    @Autowired
+    private QuestionAnswerRepository questionAnswerRepository;
+
     private SopraUser getCurrentUser() {
         String userName = ((User) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal()).getUsername();
         List<SopraUser> currentUser = userRepository.findByUsername(userName);
-        if(currentUser == null){
-            return null;
+        if(currentUser == null || currentUser.size() < 1){
+            throw new RuntimeException("Unknown User logged in!");
         }
         return currentUser.get(0);
     }
@@ -44,11 +51,8 @@ public class UserController extends WebMvcConfigurerAdapter {
     }
 
     @RequestMapping(value = "/home")
-    public String userProfile(Model model) {
-        SopraUser user = getCurrentUser();
-        model.addAttribute("User",user);
-        model.addAttribute("userState","owner");
-        return "user";
+    public String userProfileRedirect() {
+        return "redirect:/user?userName="+getCurrentUser().getUsername();
     }
 
     // Wenn die Lerngruppe nicht existiert -> Home
@@ -61,10 +65,17 @@ public class UserController extends WebMvcConfigurerAdapter {
         }
         SopraUser user = userRepository.findByUsername(userName).get(0);
         model.addAttribute("User",user);
-
         if (getCurrentUser().getId().equals(user.getId())){
             model.addAttribute("userState","owner");
+            List<QuestionAnswer> unvalidatedAnswers = new ArrayList<>();
+            for(QuestionAnswer questionAnswer: questionAnswerRepository.findAll()){
+                if(!questionAnswer.isMpcAnswer() && !questionAnswer.isValidated() && questionAnswer.getTextQuestion().getQuestionEditors().contains(user)){
+                    unvalidatedAnswers.add(questionAnswer);
+                }
+            }
+            model.addAttribute("unvalidatedAnswers",!unvalidatedAnswers.isEmpty());
         }else{
+            model.addAttribute("unvalidatedAnswers",false);
             model.addAttribute("userState","user");
         }
 
