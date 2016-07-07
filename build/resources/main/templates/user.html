@@ -179,15 +179,23 @@
             <div class="UserFeed">
                 <b>User Feed</b>
                 <br/>
-                <ul>
-                    <li th:each="comment : ${User.getUserFeed()}">
-                        <div class="comment">
-                            <span th:text="${comment.printTimeStamp()}"></span>
-                            <span th:text="${comment.getTitle()}"></span>
-                            <span th:text="${comment.getContent()}"></span>
-                        </div>
-                    </li>
-                </ul>
+                <table>
+                    <tr th:each="comment : ${User.getUserFeed()}">
+                        <td>
+                            <table class="commentBox">
+                                <tr>
+                                    <td>
+                                        <table class="commentInfo">
+                                            <tr><td><b th:text="${comment.getTitle()}"></b></td></tr>
+                                            <tr><td th:text="${comment.printTimeStamp()}"></td></tr>
+                                        </table>
+                                    </td>
+                                    <td><textarea class="finalText" readonly="readonly" style="border: none;background: none" th:text="${comment.getContent()}" cols="45" wrap="soft"></textarea></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>

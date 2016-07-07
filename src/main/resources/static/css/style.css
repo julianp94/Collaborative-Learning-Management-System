@@ -117,7 +117,24 @@ html, body {
 }
 
 .commentBox {
-	margin-bottom: 140px;
+	marin: 30px;
+	border-top: solid;
+	border-width: 2px;
+}
+
+.commentInfo{
+	margin: 20px;
+	width: 200px;
+}
+
+.InformationList tr{
+	border-top: solid;
+	border-width: 2px;
+}
+
+.InformationList tr td{
+	margin: 30px;
+	width: 300px;
 }
 
 .login{
@@ -291,6 +308,12 @@ input[type=button], input[type=submit]{
 	border-style: solid;
 	border-width: 5px;
 }
+
+.finalText{
+	resize: none;
+	color:white;
+}
+
 
 @media all and (max-height : 450px) {
 	.footerWrapper {

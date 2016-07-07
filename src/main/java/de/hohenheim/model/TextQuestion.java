@@ -20,6 +20,31 @@ public class TextQuestion {
     @ManyToOne
     SopraUser adminUser;
 
+    @ManyToMany
+    @JoinTable(
+            name="TESTQUIZLIKES",
+            joinColumns=@JoinColumn(name="QUIZ_ID"),
+            inverseJoinColumns=@JoinColumn(name="USER_ID"))
+    List<SopraUser> likes = new ArrayList<>();
+
+    public List<SopraUser> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<SopraUser> likes) {
+        this.likes = likes;
+    }
+
+    public void addLike(SopraUser user){
+        if(!likes.contains(user))
+            likes.add(user);
+    }
+
+    public void removeLike(SopraUser user){
+        if(likes.contains(user))
+            likes.remove(user);
+    }
+
     public Integer getId() { return questionID; }
 
     public SopraUser getAdminUser() { return adminUser; }

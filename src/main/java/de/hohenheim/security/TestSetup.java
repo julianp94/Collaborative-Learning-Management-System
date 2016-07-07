@@ -62,6 +62,17 @@ public class TestSetup implements ApplicationListener<ContextRefreshedEvent> {
 
         SopraUser user3 = new SopraUser();
         user3.setUsername("Julian");
+        user3.setFirstName("Julian");
+        user3.setPostalCode("73230");
+        user3.setLastName("Prokosch");
+        user3.addHobbies("Musik");
+        user3.addHobbies("Tennis");
+        user3.setEmailAdress("julian.prokosch@web.de");
+        user3.setStreetName("Birkhahnweg");
+        user3.setCity("Kirchheim");
+        user3.setStreetNumber("22");
+        user3.setTelefonNumber("07021/123456");
+        user3.setGender(SopraUser.Gender.male);
         userRepository.save(user3);
 
         Collection<GrantedAuthority> authsBenny = new ArrayList<>();

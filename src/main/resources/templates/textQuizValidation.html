@@ -22,7 +22,7 @@
                 <td><input type="hidden" name="answerID" th:value="${unvalidatedAnswer.getId()}"/></td><br/>
             </tr>
             <tr>
-                <td><textarea cols="55" wrap="soft" readonly="readonly" style="border: none;background: none" th:text="${unvalidatedAnswer.getQuestionAnswer()}" ></textarea></td><br/>
+                <td><textarea class="finalText" cols="55" wrap="soft" readonly="readonly" style="border: none;background: none" th:text="${unvalidatedAnswer.getQuestionAnswer()}" ></textarea></td><br/>
             </tr>
             <tr>
                 <td>Correct: <input type="checkbox" name="answerCorrect" value="true"/></td><br/>

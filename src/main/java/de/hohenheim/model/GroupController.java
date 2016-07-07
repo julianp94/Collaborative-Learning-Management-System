@@ -2,18 +2,25 @@ package de.hohenheim.model;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class GroupController extends WebMvcConfigurerAdapter {
@@ -31,13 +38,20 @@ public class GroupController extends WebMvcConfigurerAdapter {
     private UserFeedEntryRepository userFeedRepository;
 
     @Autowired
-    private MPCQuestionRepository mpcQuestionRepository;
-
-    @Autowired
-    private TextQuestionRepository textQuestionRepository;
+    private FileRepository fileRepository;
 
     @Autowired
     private LobbyRepository lobbyRepository;
+
+    private final ResourceLoader resourceLoader;
+
+    @Autowired
+    public GroupController(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+        new File(ROOT).mkdir();
+    }
+
+    public static final String ROOT = System.getProperty("user.dir")+"/upload";
 
     private SopraUser getCurrentUser() {
         String userName = ((User) SecurityContextHolder.getContext().getAuthentication()
@@ -53,6 +67,46 @@ public class GroupController extends WebMvcConfigurerAdapter {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/login").setViewName("login");
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/upload")
+    public String handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam(value="groupID", required=true)String groupID,
+                                   RedirectAttributes redirectAttributes) {
+        if (!file.isEmpty()) {
+            try {
+                Files.copy(file.getInputStream(), Paths.get(ROOT, file.getOriginalFilename()));
+                LearningGroup currentGroup = learningGroupRepository.findByGroupId(Integer.parseInt(groupID));
+                if(currentGroup == null|| !currentGroup.getUsers().contains(getCurrentUser())){
+                    return "redirect:/home";
+                }
+                UploadedFile newFile = new UploadedFile();
+                newFile.setAdminUser(getCurrentUser());
+                newFile.setFile(file.getOriginalFilename());
+                fileRepository.save(newFile);
+                currentGroup.addFiles(newFile);
+                learningGroupRepository.save(currentGroup);
+                redirectAttributes.addFlashAttribute("message",
+                        "You successfully uploaded " + file.getOriginalFilename() + "!");
+            } catch (IOException |RuntimeException e) {
+                e.printStackTrace();
+                redirectAttributes.addFlashAttribute("message", "Failed to upload " + file.getOriginalFilename());
+            }
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Failed to upload " + file.getOriginalFilename() + " because it was empty");
+        }
+
+        return "redirect:/group?groupID="+groupID;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/uploads/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<?> getFile(@PathVariable String filename) {
+
+        try {
+            return ResponseEntity.ok(resourceLoader.getResource("file:" + Paths.get(ROOT, filename).toString()));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // Wenn die Lerngruppe nicht existiert -> Home
@@ -195,6 +249,50 @@ public class GroupController extends WebMvcConfigurerAdapter {
         userFeedRepository.save(entry);
         userRepository.save(newAdmin);
         return "redirect:/group?groupID="+temporaryLearningGroup.getId();
+    }
+
+    @RequestMapping(value = "/commentLike")
+    public String commentLike(@RequestParam(value="commentID", required = true) String commentID){
+        GroupComment comment = commentRepository.findByCommentID(Integer.parseInt(commentID));
+        if(comment == null){
+            return "redirect:/home";
+        }
+        comment.addLike(getCurrentUser());
+        commentRepository.save(comment);
+        return "redirect:/group?groupID=" + comment.getGroup().getId();
+    }
+
+    @RequestMapping(value = "/commentUnlike")
+    public String commentUnlike(@RequestParam(value="commentID", required = true) String commentID){
+        GroupComment comment = commentRepository.findByCommentID(Integer.parseInt(commentID));
+        if(comment == null){
+            return "redirect:/home";
+        }
+        comment.removeLike(getCurrentUser());
+        commentRepository.save(comment);
+        return "redirect:/group?groupID=" + comment.getGroup().getId();
+    }
+
+    @RequestMapping(value = "/removeComment")
+    public String removeComment(@RequestParam(value="commentID", required = true) String commentID){
+        GroupComment comment = commentRepository.findByCommentID(Integer.parseInt(commentID));
+        if(comment == null){
+            return "redirect:/home";
+        }
+        if(comment.getGroup().getAdminUser().equals(getCurrentUser())) {
+            removeComment(comment);
+        }
+        return "redirect:/group?groupID=" + comment.getGroup().getId();
+    }
+
+    private void removeComment(GroupComment comment){
+        List<GroupComment> subComments = new ArrayList<>(comment.getSubComments());
+        comment.setSubComments(new ArrayList<>());
+        for(GroupComment subComment: subComments){
+            removeComment(subComment);
+        }
+        comment.setLikes(new ArrayList<>());
+        commentRepository.delete(comment.getCommentID());
     }
 
     //Funktion für das Erstellen von Kommentaren

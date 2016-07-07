@@ -40,7 +40,11 @@ public class Lobby {
     }
 
     public void addMpcQuestions(MPCQuestion mpcQuestion) {
-       mpcQuestions.add(mpcQuestion);
+        mpcQuestions.add(mpcQuestion);
+    }
+
+    public void removeMpcQuestions(MPCQuestion mpcQuestion) {
+        mpcQuestions.remove(mpcQuestion);
     }
 
     public List<QuestionAnswer> getAnswers() {
@@ -55,6 +59,10 @@ public class Lobby {
         answers.add(answer);
     }
 
+    public void removeAnswers(QuestionAnswer answer) {
+        answers.remove(answer);
+    }
+
     public List<TextQuestion> getTextQuestions() {
         return textQuestions;
     }
@@ -65,6 +73,10 @@ public class Lobby {
 
     public void addTextQuestions(TextQuestion textQuestion) {
         textQuestions.add(textQuestion);
+    }
+
+    public void removeTextQuestions(TextQuestion textQuestion) {
+        textQuestions.remove(textQuestion);
     }
 
     @ManyToMany

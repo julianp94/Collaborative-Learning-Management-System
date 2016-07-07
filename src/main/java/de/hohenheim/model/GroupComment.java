@@ -24,6 +24,31 @@ public class GroupComment extends Comment{
     @JoinColumn(name = "groupId", nullable = true, foreignKey = @ForeignKey(name="groupId"))
     LearningGroup group;
 
+    @ManyToMany
+    @JoinTable(
+            name="COMMENTLIKES",
+            joinColumns=@JoinColumn(name="COMMENT_ID"),
+            inverseJoinColumns=@JoinColumn(name="USER_ID"))
+    List<SopraUser> likes = new ArrayList<>();
+
+    public List<SopraUser> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<SopraUser> likes) {
+        this.likes = likes;
+    }
+
+    public void addLike(SopraUser user){
+        if(!likes.contains(user))
+            likes.add(user);
+    }
+
+    public void removeLike(SopraUser user){
+        if(likes.contains(user))
+            likes.remove(user);
+    }
+
     public LearningGroup getGroup() {
         return group;
     }

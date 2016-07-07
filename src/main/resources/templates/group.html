@@ -49,10 +49,11 @@
                                 <tr>
                                     <td><b>Topic: </b></td>
                                     <td th:text="${group.getTopic()}"></td>
+                                    <td><input form="questionList" type="submit" class="btn" value="*" /></td>
                                 </tr>
                                 <tr>
                                     <td><b>Description: </b></td>
-                                    <td><textarea readonly="readonly" style="border: none" th:text="${group.getDescription()}" cols="35" wrap="soft"></textarea></td>
+                                    <td><textarea class="finalText" readonly="readonly" style="border: none;background: none" th:text="${group.getDescription()}" cols="35" wrap="soft"></textarea></td>
                                 </tr>
                             </table>
                         </div>
@@ -116,19 +117,20 @@
                                 <tr th:each="member,iterationStatus : ${members}">
                                     <td th:text="${iterationStatus.count}"></td>
                                     <td th:text="${member.getUsername()}"></td>
-                                    <td th:if="${userState == 'admin' and group.getAdminUser().getUsername() != member.getUsername()}">
-                                        <form th:action="@{/removeUserFromGroup}" method="post">
+                                    <td>
+                                        <form th:if="${userState == 'admin' and group.getAdminUser().getUsername() != member.getUsername()}" th:action="@{/removeUserFromGroup}" method="post">
                                             <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
                                             <input type="hidden" name="groupID" th:value="${groupID}"/>
                                             <input type="submit" class="btn" value="Kick" />
                                         </form>
-                                    </td>
-                                    <td th:if="${currentUser.getUsername() == member.getUsername()}">
-                                        <form th:action="@{/removeUserFromGroup}" method="post">
+                                        <form th:if="${currentUser.getUsername() == member.getUsername()}" th:action="@{/removeUserFromGroup}" method="post">
                                             <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
                                             <input type="hidden" name="groupID" th:value="${groupID}"/>
                                             <input type="submit" class="btn" value="Leave" />
                                         </form>
+                                    </td>
+                                    <td>
+
                                     </td>
                                 </tr>
                             </table>
@@ -136,48 +138,123 @@
                     </td>
                 </tr>
             </table>
+            <div class="GroupInfo">
+                <div th:if="${message}">
+                    <b th:text="${message}"/>
+                </div>
+                <div>
+                    <form method="POST" enctype="multipart/form-data" action="/upload">
+                        <table>
+                            <tr>
+                                <td>File to upload:</td>
+                                <td><input style="color:white" type="file" name="file" /></td>
+                            </tr>
+                            <tr>
+                                <td><input type="hidden" name="groupID" th:value="${groupID}"/></td>
+                                <td><input type="submit" value="Upload" /></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <div>
+                    <table class="InformationList">
+                        <tr th:each="file : ${group.getFiles()}">
+                            <td><a th:href="'uploads/'+${file.getFile()}" th:text="${file.getFile()}" /></td>
+                            <td th:text="${file.getAdminUser().getUsername()}"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
              <div class="GroupFeed">
-                 <h3> Comments: </h3>
-                 <div class="addGroupComment">
-                     <form id="createComment" name="c" th:action="@{/addComment}" method="post">
-                         <fieldset>
-                             <input type="hidden" name="groupID" th:value="${groupID}"/>
-                             <input type="text" placeholder="Title" name="commentTitle"/>
-                             <textarea form ="createComment" placeholder="Content" name="commentContent" cols="35" wrap="soft"></textarea>
-                             <div class="form-actions">
-                                 <input type="submit" class="btn" value="Add Comment" />
-                             </div>
-                         </fieldset>
-                     </form>
-                 </div>
-                 <div class="commentList" th:with="currentComment=${comments}">
-                     <div th:fragment="subComment" th:remove="tag">
-                         <ul>
-                             <li th:each="comment : ${currentComment.getSubComments()}">
-                                 <div class="commentBox">
-                                     <div class="comment">
-                                         <span th:text="${comment.getTitle()}"></span>
-                                         <span th:text="${comment.getAuthor().getUsername()}"></span>
-                                         <span th:text="${comment.getContent()}"></span>
-                                         <div class="addCommentComment">
-                                             <form th:id="'createCommentComment' + ${comment.getCommentID()}" name="c" th:action="@{/addComment}" method="post">
-                                                 <fieldset>
+                 <b> Comments: </b>
+                 <form th:action="@{/addComment}" method="post">
+                     <input type="hidden" name="groupID" th:value="${groupID}"/>
+                     <table>
+                         <tr>
+                             <td><input type="text" placeholder="Title" name="commentTitle"/></td>
+                             <td><textarea placeholder="Write here..." name="commentContent" cols="45" wrap="soft"></textarea></td>
+                         </tr>
+                         <tr>
+                             <td>
+                                 <div class="form-actions">
+                                     <input type="submit" class="btn" value="Add Comment" />
+                                 </div>
+                             </td>
+                         </tr>
+                     </table>
+                 </form>
+                 <div class="commentList" >
+                     <table th:with="parentComment=${comments}">
+                         <tr th:each="comment : ${parentComment.getSubComments()}">
+                             <td>
+                                 <div th:fragment="subComment">
+                                     <table class="commentBox">
+                                         <tr>
+                                             <td>
+                                                 <table class="commentInfo">
+                                                     <tr><td><b th:text="${comment.getTitle()}"></b></td></tr>
+                                                     <tr><td th:text="${comment.getAuthor().getUsername()}"></td></tr>
+                                                     <tr style="margin-top: 20px"><td style="border-top: solid"></td></tr>
+                                                     <tr>
+                                                         <td>Likes:
+                                                             <b th:text="${comment.getLikes().size()}"></b>
+                                                             <form th:unless="${comment.getLikes().contains(currentUser)}" th:action="@{/commentLike}" method="post">
+                                                                 <input type="hidden" name="commentID" th:value="${comment.getCommentID()}"/>
+                                                                 <input type="submit" class="btn" value="Like" />
+                                                             </form>
+                                                             <form th:if="${comment.getLikes().contains(currentUser)}" th:action="@{/commentUnlike}" method="post">
+                                                                 <input type="hidden" name="commentID" th:value="${comment.getCommentID()}"/>
+                                                                 <input type="submit" class="btn" value="Unlike" />
+                                                             </form>
+                                                         </td>
+                                                     </tr>
+                                                     <tr style="margin-top: 20px">
+                                                         <td>
+                                                             <form th:if="${userState == 'admin'}" th:action="@{/removeComment}" method="post">
+                                                                 <input type="hidden" name="commentID" th:value="${comment.getCommentID()}"/>
+                                                                 <input type="submit" class="btn" value="delete" />
+                                                             </form>
+                                                         </td>
+                                                     </tr>
+                                                 </table>
+                                             </td>
+                                             <td><textarea class="finalText" readonly="readonly" style="border: none;background: none" th:text="${comment.getContent()}" cols="45" wrap="soft"></textarea></td>
+                                         </tr>
+                                         <tr>
+                                             <td> </td>
+                                             <td>
+                                                 <form th:action="@{/addComment}" method="post">
                                                      <input type="hidden" name="groupID" th:value="${groupID}"/>
                                                      <input type="hidden" name="commentParentID" th:value="${comment.getCommentID()}"/>
-                                                     <input type="text" placeholder="Title" name="commentTitle"/>
-                                                     <textarea th:form ="'createCommentComment' + ${comment.getCommentID()}" placeholder="Content" name="commentContent" cols="35" wrap="soft"></textarea>
-                                                     <div class="form-actions">
-                                                         <input type="submit" class="btn" value="Add Comment" />
-                                                     </div>
-                                                 </fieldset>
-                                             </form>
-                                         </div>
-                                     </div>
-                                    <div th:with="currentComment = ${comment}" th:include="::subComment" th:remove="tag"></div>
-                                </div>
-                             </li>
-                         </ul>
-                     </div>
+                                                     <table>
+                                                         <tr>
+                                                             <td><input type="text" placeholder="Title" name="commentTitle"/></td>
+                                                         </tr>
+                                                         <tr>
+                                                             <td><textarea placeholder="Answer here..." name="commentContent" cols="45" wrap="soft"></textarea></td>
+                                                         </tr>
+                                                         <tr>
+                                                             <td>
+                                                                 <div class="form-actions">
+                                                                     <input type="submit" class="btn" value="Add Comment" />
+                                                                 </div>
+                                                             </td>
+                                                         </tr>
+                                                     </table>
+                                                 </form>
+                                             </td>
+                                         </tr>
+                                         <tr th:each="currentComment : ${comment.getSubComments()}">
+                                             <td> </td>
+                                             <td>
+                                                 <div th:with="comment = ${currentComment}" th:include="::subComment" th:remove="tag"></div>
+                                             </td>
+                                         </tr>
+                                     </table>
+                                 </div>
+                             </td>
+                         </tr>
+                     </table>
                  </div>
              </div>
         </div>

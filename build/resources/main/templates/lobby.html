@@ -17,61 +17,78 @@
     </div>
     <div class="main">
         <div class="contentWrapper">
-             <br/>
-             <br/>
-             <div th:if="${userState == 'admin'}">
-                 <h5> Add User: </h5>
-                 <form name="f" th:action="@{/addUserToLobby}" method="post">
-                     <fieldset>
-                         <p th:text="${errorMessage}" />
-                         <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
-                         <label for="userName">UserName</label>
-                         <input type="text" id="userName" name="userName"/>
-                         <div class="form-actions">
-                             <input type="submit" class="btn" value="Add User" />
-                         </div>
-                     </fieldset>
-                 </form>
-             </div>
-            <div class="UserList">
-                <h4>Member list: </h4>
-                <table>
-                    <tr th:each="member,iterationStatus : ${lobby.getUsers()}">
-                        <td th:text="${iterationStatus.count}"></td>
-                        <td th:text="${member.getUsername()}"></td>
-                        <td th:if="${userState == 'admin' and lobby.getAdminUser().getUsername() != member.getUsername()}">
-                            <form th:action="@{/removeUserFromLobby}" method="post">
-                                <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
+
+            <table>
+                <tr>
+                    <td>
+                        <div class="GroupInfo">
+                            <b>Open Quiz:</b>
+                            <div th:if="${openQuiz == true}">
+                                <p>You have an open Quiz!</p>
+                                <form th:action="@{/quiz}" method="post">
+                                    <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
+                                    <input type="submit" class="btn" value="Start Quiz" />
+                                </form>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div th:if="${userState == 'admin'}" class="GroupInfo">
+                            <b>Add User: </b>
+                            <form name="f" th:action="@{/addUserToLobby}" method="post">
                                 <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
-                                <input type="submit" class="btn" value="Kick" />
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <p th:text="${errorMessage}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>User Name: </td>
+                                        <td><input type="text" id="userName" name="userName"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form-actions">
+                                                <input type="submit" class="btn" value="Add User" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
                             </form>
-                        </td>
-                        <td th:if="${currentUser.getUsername() == member.getUsername()}">
-                            <form th:action="@{/removeUserFromLobby}" method="post">
-                                <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
-                                <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
-                                <input type="submit" class="btn" value="Leave" />
-                            </form>
-                        </td>
-                    </tr>
-                </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="GroupInfo">
+                            <b>Member list: </b>
+                            <table>
+                                <tr th:each="member,iterationStatus : ${lobby.getUsers()}">
+                                    <td th:text="${iterationStatus.count}"></td>
+                                    <td th:text="${member.getUsername()}"></td>
+                                    <td th:if="${userState == 'admin' and lobby.getAdminUser().getUsername() != member.getUsername()}">
+                                        <form th:action="@{/removeUserFromLobby}" method="post">
+                                            <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
+                                            <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
+                                            <input type="submit" class="btn" value="Kick" />
+                                        </form>
+                                    </td>
+                                    <td th:if="${currentUser.getUsername() == member.getUsername()}">
+                                        <form th:action="@{/removeUserFromLobby}" method="post">
+                                            <input type="hidden" name="userName" th:value="${member.getUsername()}"/>
+                                            <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
+                                            <input type="submit" class="btn" value="Leave" />
+                                        </form>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="GroupFeed">
             </div>
-             <br />
-            <div th:if="${openQuiz == true}">
-                <p>You have an open Quiz!</p>
-                <form th:action="@{/quiz}" method="post">
-                    <input type="hidden" name="lobbyID" th:value="${lobby.getID()}"/>
-                    <input type="submit" class="btn" value="Start Quiz" />
-                </form>
-            </div>
-             <br />
-             <br />
-             <br />
-             <br />
-             <br />
-             <br />
-             <br />
-             <br />
         </div>
     </div>
     <div id="footer" class="footerWrapper"></div>

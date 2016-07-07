@@ -17,32 +17,52 @@
     </div>
     <div class="main">
         <div class="contentWrapper">
-            <div class="QuestionAdd">
-                <form name="f" th:action="@{/questionCreation}" method="post">
-                    <input type="hidden" name="topic" th:value="${Topic}"/>
-                    <input type="hidden" name="questionType" value="MPC"/>
-                    <input type="text" name="questionText" placeholder="Question Text..."/>
-                    <textarea type="text" name="answer" cols="35" wrap="soft" placeholder="Question Answers seperated by ;"></textarea>
-                    <div class="form-actions">
-                        <input type="submit" class="btn" value="Create MPC" />
-                    </div>
-                </form>
-            </div>
-            <div class="QuestionAdd">
-                <form name="f" th:action="@{/questionCreation}" method="post">
-                    <input type="hidden" name="topic" th:value="${Topic}"/>
-                    <input type="hidden" name="questionType" value="Text"/>
-                    <input type="text" name="questionText" placeholder="Question Text..."/>
-                    <textarea type="text" name="questionMods" cols="35" wrap="soft" placeholder="Mods seperated by ;"></textarea>
-                    <div class="form-actions">
-                        <input type="submit" class="btn" value="Create Question" />
-                    </div>
-                </form>
-            </div>
-            <div class="QuestionList">
-                <table>
+            <table>
+                <tr>
+                    <td>
+                        <div class="GroupInfo">
+                            <form th:action="@{/questionCreation}" method="post">
+                                <input type="hidden" name="topic" th:value="${Topic}"/>
+                                <input type="hidden" name="questionType" value="MPC"/>
+                                <input type="text" name="questionText" placeholder="Question Text..."/>
+                                <textarea type="text" name="answer" cols="35" wrap="soft" placeholder="Question Answers seperated by ;"></textarea>
+                                <div class="form-actions">
+                                    <input type="submit" class="btn" value="Create MPC" />
+                                </div>
+                            </form>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="GroupInfo">
+                            <form th:action="@{/questionCreation}" method="post">
+                                <input type="hidden" name="topic" th:value="${Topic}"/>
+                                <input type="hidden" name="questionType" value="Text"/>
+                                <input type="text" name="questionText" placeholder="Question Text..."/>
+                                <textarea type="text" name="questionMods" cols="35" wrap="soft" placeholder="Mods seperated by ;"></textarea>
+                                <div class="form-actions">
+                                    <input type="submit" class="btn" value="Create Question" />
+                                </div>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="UserFeed">
+                <table class="InformationList">
                     <tr th:each="question : ${mpcQuestions}">
-                        <td th:text="${question.getId()}"></td>
+                        <td>Likes:
+                            <b th:text="${question.getLikes().size()}"></b>
+                            <form th:unless="${question.getLikes().contains(currentUser)}" th:action="@{/questionLike}" method="post">
+                                <input type="hidden" name="questionID" th:value="${question.getId()}"/>
+                                <input type="hidden" name="questionType" value="MPC"/>
+                                <input type="submit" class="btn" value="Like" />
+                            </form>
+                            <form th:if="${question.getLikes().contains(currentUser)}" th:action="@{/questionUnlike}" method="post">
+                                <input type="hidden" name="questionID" th:value="${question.getId()}"/>
+                                <input type="hidden" name="questionType" value="MPC"/>
+                                <input type="submit" class="btn" value="Unlike" />
+                            </form>
+                        </td>
                         <td th:text="${question.getAdminUser().getUsername()}"></td>
                         <td th:text="${question.getQuestionText()}"></td>
                         <td th:if="${currentUser == question.getAdminUser()}">
@@ -54,9 +74,21 @@
                         </td>
                     </tr>
                 </table>
-                <table>
+                <table class="InformationList">
                     <tr th:each="question : ${textQuestions}">
-                        <td th:text="${question.getId()}"></td>
+                        <td>Likes:
+                            <b th:text="${question.getLikes().size()}"></b>
+                            <form th:unless="${question.getLikes().contains(currentUser)}" th:action="@{/questionLike}" method="post">
+                                <input type="hidden" name="questionID" th:value="${question.getId()}"/>
+                                <input type="hidden" name="questionType" value="MPC"/>
+                                <input type="submit" class="btn" value="Like" />
+                            </form>
+                            <form th:if="${question.getLikes().contains(currentUser)}" th:action="@{/questionUnlike}" method="post">
+                                <input type="hidden" name="questionID" th:value="${question.getId()}"/>
+                                <input type="hidden" name="questionType" value="MPC"/>
+                                <input type="submit" class="btn" value="Unlike" />
+                            </form>
+                        </td>
                         <td th:text="${question.getAdminUser().getUsername()}"></td>
                         <td th:text="${question.getQuestionText()}"></td>
                         <td th:if="${currentUser == question.getAdminUser()}">
@@ -71,18 +103,6 @@
             </div>
         </div>
     </div>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
     <div id="footer" class="footerWrapper"></div>
 </body>
 </html>

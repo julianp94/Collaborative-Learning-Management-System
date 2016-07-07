@@ -117,21 +117,79 @@ public class LobbyController extends WebMvcConfigurerAdapter {
     }
 
     @RequestMapping(value = "/questionRemove", method = RequestMethod.POST)
-    public String questionList(@RequestParam(value="questionID", required = true) String questionID, @RequestParam(value="questionType", required = false, defaultValue = "MPC") String questionType){
+    public String questionRemove(@RequestParam(value="questionID", required = true) String questionID, @RequestParam(value="questionType", required = false, defaultValue = "MPC") String questionType){
 
         String topic = "";
         if(questionType.equals("MPC")){
             MPCQuestion question = mpcQuestionRepository.findByQuestionID(Integer.parseInt(questionID));
             topic = question.getQuestionTopic();
             if(question.getAdminUser().equals(getCurrentUser())) {
+                for(QuestionAnswer answer: questionAnswerRepository.findAll()){
+                    if(question.equals(answer.getMpcQuestion())){
+                        answer.getLobby().removeAnswers(answer);
+                        lobbyRepository.save(answer.getLobby());
+                        questionAnswerRepository.delete(answer.getId());
+                    }
+                }
+                for(Lobby lobby: lobbyRepository.findAll()){
+                    lobby.removeMpcQuestions(question);
+                }
+                question.setLikes(new ArrayList<>());
+                mpcQuestionRepository.save(question);
                 mpcQuestionRepository.delete(Integer.parseInt(questionID));
             }
         }else{
             TextQuestion question = textQuestionRepository.findByQuestionID(Integer.parseInt(questionID));
             topic = question.getQuestionTopic();
             if(question.getAdminUser().equals(getCurrentUser())) {
+                for(QuestionAnswer answer: questionAnswerRepository.findAll()){
+                    if(question.equals(answer.getTextQuestion())){
+                        answer.getLobby().removeAnswers(answer);
+                        lobbyRepository.save(answer.getLobby());
+                        questionAnswerRepository.delete(answer.getId());
+                    }
+                }
+                for(Lobby lobby: lobbyRepository.findAll()){
+                    lobby.removeTextQuestions(question);
+                }
+                question.setLikes(new ArrayList<>());
+                textQuestionRepository.save(question);
                 textQuestionRepository.delete(Integer.parseInt(questionID));
             }
+        }
+        return "redirect:/questionList?topic="+topic;
+    }
+
+    @RequestMapping(value = "/questionLike")
+    public String questionLike(@RequestParam(value="questionID", required = true) String questionID, @RequestParam(value="questionType", required = false, defaultValue = "MPC") String questionType){
+        String topic = "";
+        if(questionType.equals("MPC")){
+            MPCQuestion question = mpcQuestionRepository.findByQuestionID(Integer.parseInt(questionID));
+            question.addLike(getCurrentUser());
+            topic = question.getQuestionTopic();
+            mpcQuestionRepository.save(question);
+        }else{
+            TextQuestion question = textQuestionRepository.findByQuestionID(Integer.parseInt(questionID));
+            question.addLike(getCurrentUser());
+            topic = question.getQuestionTopic();
+            textQuestionRepository.save(question);
+        }
+        return "redirect:/questionList?topic="+topic;
+    }
+
+    @RequestMapping(value = "/questionUnlike")
+    public String questionUnlike(@RequestParam(value="questionID", required = true) String questionID, @RequestParam(value="questionType", required = false, defaultValue = "MPC") String questionType){
+        String topic = "";
+        if(questionType.equals("MPC")){
+            MPCQuestion question = mpcQuestionRepository.findByQuestionID(Integer.parseInt(questionID));
+            question.removeLike(getCurrentUser());
+            topic = question.getQuestionTopic();
+            mpcQuestionRepository.save(question);
+        }else{
+            TextQuestion question = textQuestionRepository.findByQuestionID(Integer.parseInt(questionID));
+            question.removeLike(getCurrentUser());
+            topic = question.getQuestionTopic();
+            textQuestionRepository.save(question);
         }
         return "redirect:/questionList?topic="+topic;
     }
@@ -547,6 +605,12 @@ public class LobbyController extends WebMvcConfigurerAdapter {
     }
 
     public void lobbyDelete(int lobbyId){
+        Lobby lobby = lobbyRepository.findByLobbyID(lobbyId);
+        lobby.setAnswers(new ArrayList<>());
+        lobby.setMpcQuestions(new ArrayList<>());
+        lobby.setTextQuestions(new ArrayList<>());
+        lobby.setUsers(new ArrayList<>());
+        lobbyRepository.save(lobby);
         lobbyRepository.delete(lobbyId);
     }
 }

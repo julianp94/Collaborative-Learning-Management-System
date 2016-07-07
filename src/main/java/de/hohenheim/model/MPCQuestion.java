@@ -1,10 +1,7 @@
 package de.hohenheim.model;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +21,31 @@ public class MPCQuestion {
 
     @ManyToOne
     SopraUser adminUser;
+
+    @ManyToMany
+    @JoinTable(
+            name="MPCQUIZLIKES",
+            joinColumns=@JoinColumn(name="QUIZ_ID"),
+            inverseJoinColumns=@JoinColumn(name="USER_ID"))
+    List<SopraUser> likes = new ArrayList<>();
+
+    public List<SopraUser> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<SopraUser> likes) {
+        this.likes = likes;
+    }
+
+    public void addLike(SopraUser user){
+        if(!likes.contains(user))
+            likes.add(user);
+    }
+
+    public void removeLike(SopraUser user){
+        if(likes.contains(user))
+            likes.remove(user);
+    }
 
     public Integer getId() { return questionID; }
 

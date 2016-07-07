@@ -17,7 +17,7 @@
     </div>
     <div class="main">
         <div class="contentWrapper">
-            <div class="GroupCreate">
+            <div class="GroupInfo">
                 <form name="f" th:action="@{/groupCreate}" method="post">
                     <fieldset>
                         <label for="groupName">Groupname</label>
@@ -28,23 +28,23 @@
                     </fieldset>
                 </form>
             </div>
-            <div class="GroupList">
-                <h3>You are member of the following groups: </h3>
-                <table>
+            <div class="GroupInfo">
+                <b>You are member of the following groups: </b>
+                <table class="InformationList">
                     <tr th:each="group,iterationStatus : ${groupIDs}">
                         <td th:text="${iterationStatus.count}"></td>
-                        <td><a th:href="'/group?groupID='+${group.getId()}"><p th:text="${group.getName()}" /></a></td>
+                        <td><a th:href="'/group?groupID='+${group.getId()}"><b th:text="${group.getName()}" /></a></td>
                         <td th:text="${group.getTopic()}"></td>
                     </tr>
                 </table>
             </div>
-            <div class="LobbyList">
-                <h4>Lobby list: </h4>
-                <table>
+            <div class="UserFeed">
+                <b>Lobby list: </b>
+                <table class="InformationList">
                     <tr th:each="lobby,iterationStatus : ${lobbies}">
                         <td th:text="${iterationStatus.count}"></td>
                         <td th:text="${lobby.getAdminUser().getUsername()}"></td>
-                        <td><a th:href="'/lobby?lobbyID='+${lobby.getID()}">Enter</a></td>
+                        <td><a th:href="'/lobby?lobbyID='+${lobby.getID()}"><b>Enter</b></a></td>
                     </tr>
                 </table>
             </div>

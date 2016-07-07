@@ -27,6 +27,25 @@ public class LearningGroup {
                 inverseJoinColumns=@JoinColumn(name="USER_ID"))
     List<SopraUser> users = new ArrayList<>();
 
+    public List<UploadedFile> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<UploadedFile> files) {
+        this.files = files;
+    }
+
+    public void addFiles(UploadedFile file) {
+        files.add(file);
+    }
+
+    @ManyToMany
+    @JoinTable(
+            name="GROUPFILES",
+            joinColumns=@JoinColumn(name="GROUP_ID"),
+            inverseJoinColumns=@JoinColumn(name="FILE_ID"))
+    List<UploadedFile> files = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(
             name="COMMENTASSIGNMENT",
