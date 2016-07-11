@@ -81,6 +81,17 @@ public class TestSetup implements ApplicationListener<ContextRefreshedEvent> {
 
         SopraUser user4 = new SopraUser();
         user4.setUsername("Benny");
+        user4.setFirstName("Benny");
+        user4.setPostalCode("73440");
+        user4.setLastName("Müller");
+        user4.addHobbies("Sport");
+        user4.addHobbies("Fußball");
+        user4.setEmailAdress("benny.mueller@web.de");
+        user4.setStreetName("Alleenstraße");
+        user4.setCity("Stuttgart");
+        user4.setStreetNumber("25");
+        user4.setTelefonNumber("07023/123456");
+        user4.setGender(SopraUser.Gender.male);
         userRepository.save(user4);
 
         Collection<GrantedAuthority> authsCedrik = new ArrayList<>();
@@ -89,6 +100,17 @@ public class TestSetup implements ApplicationListener<ContextRefreshedEvent> {
 
         SopraUser user5 = new SopraUser();
         user5.setUsername("Cedrik");
+        user5.setFirstName("Cedrik");
+        user5.setPostalCode("73250");
+        user5.setLastName("Fritz");
+        user5.addHobbies("Computer");
+        user5.addHobbies("Schwimmen");
+        user5.setEmailAdress("cedrik.fritz@web.de");
+        user5.setStreetName("Testweg");
+        user5.setCity("Böblingen");
+        user5.setStreetNumber("1");
+        user5.setTelefonNumber("07023/123656");
+        user5.setGender(SopraUser.Gender.male);
         userRepository.save(user5);
 
 

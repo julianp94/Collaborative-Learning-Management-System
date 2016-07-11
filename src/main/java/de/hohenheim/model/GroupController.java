@@ -50,9 +50,10 @@ public class GroupController extends WebMvcConfigurerAdapter {
         this.resourceLoader = resourceLoader;
         new File(ROOT).mkdir();
     }
-
+// Uploads werden im Ordner des ausführenden Programms + /upload gespeichert
     public static final String ROOT = System.getProperty("user.dir")+"/upload";
 
+// Abfrage ob User im System vorhanden ist
     private SopraUser getCurrentUser() {
         String userName = ((User) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal()).getUsername();
@@ -68,7 +69,7 @@ public class GroupController extends WebMvcConfigurerAdapter {
         registry.addViewController("/login").setViewName("login");
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
     }
-
+//Fileupload
     @RequestMapping(method = RequestMethod.POST, value = "/upload")
     public String handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam(value="groupID", required=true)String groupID,
                                    RedirectAttributes redirectAttributes) {
@@ -97,7 +98,7 @@ public class GroupController extends WebMvcConfigurerAdapter {
 
         return "redirect:/group?groupID="+groupID;
     }
-
+//File anzeigen lassen
     @RequestMapping(method = RequestMethod.GET, value = "/uploads/{filename:.+}")
     @ResponseBody
     public ResponseEntity<?> getFile(@PathVariable String filename) {
@@ -194,7 +195,8 @@ public class GroupController extends WebMvcConfigurerAdapter {
             return "redirect:/group?groupID=" + currentGroup.getId();
         }
     }
-
+    // Wenn der Nutzer nicht Besitzer der Gruppe ist kann er keine Nutzer entfernen
+    // Wenn der zu entfernende User nicht existiert -> Fehlermeldung
     @RequestMapping(value = "/removeUserFromGroup", method = RequestMethod.POST)
     public String removeUserFromGroup(@RequestParam(value="groupID", required = true) String groupID, @RequestParam(value="userName", required = true) String userName){
         LearningGroup currentGroup =learningGroupRepository.findByGroupId(Integer.parseInt(groupID));
@@ -219,7 +221,7 @@ public class GroupController extends WebMvcConfigurerAdapter {
             return "redirect:/group?groupID=" + currentGroup.getId();
         }
     }
-
+//Bearbeiten des Topics/Description
     @RequestMapping(value = "/groupDataUpdate", method = RequestMethod.POST)
     public String groupDataUpdate(@RequestParam(value="groupID", required = true) String groupID, @RequestParam(value="groupTopic", required = true) String groupTopic, @RequestParam(value="groupDescription", required = true) String groupDescription){
         LearningGroup currentGroup =learningGroupRepository.findByGroupId(Integer.parseInt(groupID));
@@ -250,7 +252,7 @@ public class GroupController extends WebMvcConfigurerAdapter {
         userRepository.save(newAdmin);
         return "redirect:/group?groupID="+temporaryLearningGroup.getId();
     }
-
+//Likes erstellen oder entfernen
     @RequestMapping(value = "/commentLike")
     public String commentLike(@RequestParam(value="commentID", required = true) String commentID){
         GroupComment comment = commentRepository.findByCommentID(Integer.parseInt(commentID));
@@ -272,7 +274,7 @@ public class GroupController extends WebMvcConfigurerAdapter {
         commentRepository.save(comment);
         return "redirect:/group?groupID=" + comment.getGroup().getId();
     }
-
+//Wenn User Admin ist, kann er Kommentare entfernen
     @RequestMapping(value = "/removeComment")
     public String removeComment(@RequestParam(value="commentID", required = true) String commentID){
         GroupComment comment = commentRepository.findByCommentID(Integer.parseInt(commentID));
@@ -284,7 +286,7 @@ public class GroupController extends WebMvcConfigurerAdapter {
         }
         return "redirect:/group?groupID=" + comment.getGroup().getId();
     }
-
+//Alle Subcomments und Likes werden mitgelöscht
     private void removeComment(GroupComment comment){
         List<GroupComment> subComments = new ArrayList<>(comment.getSubComments());
         comment.setSubComments(new ArrayList<>());

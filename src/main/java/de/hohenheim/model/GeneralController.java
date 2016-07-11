@@ -39,7 +39,7 @@ public class GeneralController extends WebMvcConfigurerAdapter {
     @Autowired
     private LobbyRepository lobbyRepository;
 
-
+/** Abfrage ob User im System vorhanden ist**/
     private SopraUser getCurrentUser() {
         String userName = ((User) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal()).getUsername();
@@ -56,7 +56,7 @@ public class GeneralController extends WebMvcConfigurerAdapter {
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
     }
 
-
+/** AdminHome auf Home umgeleitet **/
     @RequestMapping(value = "/admin/home")
     public String adminHome() {
         return "redirect:/home";
@@ -72,7 +72,7 @@ public class GeneralController extends WebMvcConfigurerAdapter {
         }
         return "register";
     }
-
+/** Registrierung, doppelter Name wird abgefangen **/
     @RequestMapping(value = "/registrate", method = RequestMethod.POST)
     public String registering(@RequestParam(value="userName", required = true) String userName, @RequestParam(value="userPassword", required = true) String userPassword,
                               @RequestParam(value="userMail", required = true) String userMail) {
@@ -80,7 +80,7 @@ public class GeneralController extends WebMvcConfigurerAdapter {
         if(currentUser != null && currentUser.size() > 0){
             return "register?error=NameTaken";
         }
-
+/** Erstellen von neuem User **/
         Collection<GrantedAuthority> authUser = new ArrayList<>();
         authUser.add(new SimpleGrantedAuthority("ROLE_USER"));
         userDetailsManager.createUser(new User(userName, passwordEncoder.encode(userPassword), authUser));
@@ -98,7 +98,7 @@ public class GeneralController extends WebMvcConfigurerAdapter {
   //      return "userhome";
    // }
 
-    // Seite für das erstellen von Gruppen, zeigt alle Gruppen an in denen man Mitglied ist
+    // Seite für das erstellen von Gruppen, zeigt alle Gruppen und Lobbys an in denen man Mitglied ist
     @RequestMapping(value = "/groupList")
     public String groupDirectory(Model model) {
         List<LearningGroup> groupIDs = new ArrayList<LearningGroup>();

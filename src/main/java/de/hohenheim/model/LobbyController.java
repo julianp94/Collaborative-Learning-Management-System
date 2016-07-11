@@ -79,7 +79,7 @@ public class LobbyController extends WebMvcConfigurerAdapter {
         model.addAttribute("unvalidatedAnswer", unvalidatedAnswer);
         return "textQuizValidation";
     }
-
+// Wenn Editor Frage als korrekt wertet -> Rangpunkt +1
     @RequestMapping(value = "/quizValidationResult")
     public String quizValidationResult(@RequestParam(value="answerID", required = true) String answerID,@RequestParam(value="answerCorrect", required = false, defaultValue="false") String answerCorrect){
         QuestionAnswer currentAnswer = questionAnswerRepository.findByAnswerID(Integer.parseInt(answerID));
@@ -94,7 +94,7 @@ public class LobbyController extends WebMvcConfigurerAdapter {
         }
         return "redirect:/quizValidation";
     }
-
+// Gibt alle MC und offenen Fragen zum Topic aus
     @RequestMapping(value = "/questionList")
     public String questionList(@RequestParam(value="topic", required = true) String topic, Model model){
         model.addAttribute("Topic", topic);
@@ -115,7 +115,7 @@ public class LobbyController extends WebMvcConfigurerAdapter {
         model.addAttribute("currentUser",getCurrentUser());
         return "questions";
     }
-
+// Entfernen der Fragen + Antworten
     @RequestMapping(value = "/questionRemove", method = RequestMethod.POST)
     public String questionRemove(@RequestParam(value="questionID", required = true) String questionID, @RequestParam(value="questionType", required = false, defaultValue = "MPC") String questionType){
 
@@ -159,7 +159,7 @@ public class LobbyController extends WebMvcConfigurerAdapter {
         }
         return "redirect:/questionList?topic="+topic;
     }
-
+// Likes hinzufügen
     @RequestMapping(value = "/questionLike")
     public String questionLike(@RequestParam(value="questionID", required = true) String questionID, @RequestParam(value="questionType", required = false, defaultValue = "MPC") String questionType){
         String topic = "";
@@ -176,7 +176,7 @@ public class LobbyController extends WebMvcConfigurerAdapter {
         }
         return "redirect:/questionList?topic="+topic;
     }
-
+// Likes entfernen
     @RequestMapping(value = "/questionUnlike")
     public String questionUnlike(@RequestParam(value="questionID", required = true) String questionID, @RequestParam(value="questionType", required = false, defaultValue = "MPC") String questionType){
         String topic = "";
@@ -193,7 +193,7 @@ public class LobbyController extends WebMvcConfigurerAdapter {
         }
         return "redirect:/questionList?topic="+topic;
     }
-
+// Lobby erstellen, nach beantworten der MC Fragen wird man zur Lobby zurück geworfen
     @RequestMapping(value = "/quiz", method = RequestMethod.POST)
     public String quiz(@RequestParam(value="lobbyID", required = true) String lobbyID, Model model){
         Lobby currentLobby = lobbyRepository.findByLobbyID(Integer.parseInt(lobbyID));
@@ -239,7 +239,7 @@ public class LobbyController extends WebMvcConfigurerAdapter {
             return "textQuiz";
         }
     }
-
+// MC Quiz Fragen initailisieren, erste Antwort (Wert o ) immer richtig
     @RequestMapping(value = "/quizResult")
     public String quizResult(@RequestParam(value="lobbyID", required = true) String lobbyID, @RequestParam(value="answers0", required = true) String answers0,
                              @RequestParam(value="questionIDs0", required = true) String questionIDs0, @RequestParam(value="answers1", required = false, defaultValue = "") String answers1,
